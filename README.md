@@ -8,6 +8,12 @@
 
 检查自己有ssh密钥没。一般来说都可以在[这里](https://docs.github.com/zh/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account)查看文档来自行添加一个（ssh密钥是通用的，但通常推荐每个获得Github访问权限的设备都有单独的密钥，万一真的出事了可以方便注销密钥）
 
+> [!CAUTION]
+>
+> 由于涉及到直接与长城之外的GitHub服务器连接,所以出国流量大的时候最好不要尝试去连接.
+>
+> 具体时间看各大高校的镜像站同步内容的时间,大部分都在每日的晚上.
+
 > [!WARNING]
 >
 > GitHub对于ssh密钥的访问貌似很宽松，不要泄漏你的密钥，否则删库从梦想走进现实。
@@ -135,6 +141,10 @@
 
    ​	克隆下来后默认的上游为`main.bundle`的绝对路径,需要手动设置上游:`git remote set-url origin git@github.com:dontknowhy/MyTheme-private.git`(ssh坏了的话自行寻找镜像站替换).
 
+   > [!NOTE]
+   >
+   > 你现在下载的bundle肯定已经落后与本仓库了,请看看[下面](https://github.com/dontknowhy/MyTheme-private#如何接收更新)的介绍来更新.
+
 2. `.git`文件夹过大是因为git压根不适合处理图片文件,我保存的全是已经经过jpeg压缩的图片,git那赢弱的zlib压缩就算了.
 
 3. 有时候网络环境比较自由的空气但是还是断了.这时候可能需要整点git配置文件:
@@ -159,7 +169,40 @@
    git config --global pack.useSparse true
    ```
 
-   
+
+## 如何接收更新
+
+一般来说你使用上述方法都可以设置好上游,但是你克隆好后可能还是需要检查一下:`git remote -v`,一般会输出以下东西:
+
+```bash
+origin  git@github.com:dontknowhy/MyTheme-private.git (fetch)
+origin  git@github.com:dontknowhy/MyTheme-private.git (push)
+```
+
+如果origin行是一串网址或者以`git@github.com`开头的地址那你一般可以用
+
+```bash
+git fetch -j8 && git pull
+```
+
+或者更加简单的
+
+```bash
+git pull -j8
+```
+
+最后你应该都可以得到类似于以下的输出:
+
+```bash
+updating 4990df4..521802e
+updating files: 100% (85/85), done.
+fast-forward
+"\346\250\252/723.jpg"  | bin 3098000 -> 3032067 bytes
+##有可能很长
+85 files changed, 0 insertions(+), 0 deletions(-)
+```
+
+如果发现最后带有`xxx files changed, 0 insertions(+), 0 deletions(-)`的字样,那你就更新好了.
 
 ## 写在最后
 
