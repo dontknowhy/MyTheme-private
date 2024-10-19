@@ -2,6 +2,19 @@
 
 如何克隆这个~~智障~~仓库：
 
+## 这个仓库功能着
+
+1. 惊人的半角全角区别.
+2. 不太准确但是It Just Works的信息.
+3. 很容易被DMCA的图片.
+4. 大哥我错了真的不想拿来大规模传播的.
+5. 可能缺失的句号
+6. 并没有的[官方正版下载链接](https://www.bilibili.com).
+7. 并不想使用Noto Sans CJK SC的Typora写成的文档.
+8. 乱写的commit message.
+9. 压根不合适的源码管理器.
+10. 转人工.
+
 ## SSH
 
 > 你最开始需要做的是自己注册个GitHub账户,如果遇到什么访问不了的问题自行解决，都来这看了不有个号怎么行呢。
@@ -30,7 +43,7 @@
    Enter file in which to save the key (/home/dontknowhy/.ssh/id_rsa):
    ```
 
-   这时候最好直接回车，因为这块小破地方ssh尝试连接时会寻找这里的密钥进行验证（记得拷贝括号的内容，后面有用）
+   这时候最好直接回车，因为这块小破地方ssh尝试连接时会寻找这里的密钥 (家目录的`.ssh`文件夹) 进行验证（记得拷贝括号的内容，后面有用）
 
    之后按照提示输入一个密码(最好是强密码)，你就有个密钥了
 
@@ -83,11 +96,11 @@
 
    如果~~GitCode~~对你问好那你就可以用这个密钥愉快进行操作了。
 
-5. 透过ssh技术克隆这个仓库
+5. 透过ssh克隆这个仓库
 
    `git clone --depth=1 -j 16 git@github.com:dontknowhy/MyTheme-private.git`
 
-   注释: 1.  `--depth=1`只仅克隆一层仓库，人话就是哥们不用下载我黑历史。
+   注释: 1.  `--depth=1`只仅克隆一层仓库,人话就是哥们不用下载我黑历史,另外也有助于你节省磁盘空间
 
    2. `-j 16`可以加速下载，如果失败请改成`-j 8`。在广东特供中国移动可以跑到5M/s，但其他网络一般都有效，且流量全程被你的密钥加密。
 
@@ -121,13 +134,13 @@
 
 `git clone --depth=1 -j 16 https://kkgithub.com/dontknowhy/MyTheme-private.git`
 
-或者去寻找一些proxy方案,例如[GitHub Proxy](https://mirror.ghproxy.com/donate)
+或者去寻找一些proxy方案,例如[GitHub Proxy](https://ghp.ci/donate)
 
-`git clone --depth=1 -j 16 https://mirror.ghproxy.com/https://github.com/dontknowhy/MyTheme-private.git`
+`git clone --depth=1 -j 16 https://ghp.ci/https://github.com/dontknowhy/MyTheme-private.git`
 
 ## `github.com`永不为奴！
 
-感觉不如______.
+感觉不如[____](https://ys-api.mihoyo.com/event/download_porter/link/ys_cn/official/android_default).
 
 如果GFW漏风都是万幸。
 
@@ -140,6 +153,10 @@
 1. ​	在一些罕见的地方可能遇到git很难克服的问题,例如实在没有办法撑住时不时断开连接的网络.这时候可以去[releases](https://github.com/dontknowhy/MyTheme-private/releases/tag/v2.1)(链接为原版GitHub,自己替换为镜像站)下载大约6.5GB的[7zip](https://7-zip.org)分片压缩包,解压出来后会出现一个叫`main.bundle`的东西,这个叫`git bundle`,可以直接使用`git clone main.bundle theme`来像在线链接一样克隆(不接受`--depth`参数,`-j`参数也是).
 
    ​	克隆下来后默认的上游为`main.bundle`的绝对路径,需要手动设置上游:`git remote set-url origin git@github.com:dontknowhy/MyTheme-private.git`(ssh坏了的话自行寻找镜像站替换).
+
+   > [!NOTE]
+   >
+   > `git bundle`克隆出来的仓库可能有12G以上的大小,请应用下面的配置并gc一下.
 
    > [!NOTE]
    >
@@ -168,6 +185,17 @@
    git config --global core.multiPackIndex true
    git config --global pack.useSparse true
    ```
+
+> [!WARNING]
+>
+> 这些commit有助于减小`.git`文件夹的大小,所以务必应用完后运行:
+>
+> ```bash
+> git gc --prune=now
+> ```
+>
+> 这样你就会惊喜的发现`.git`文件夹比图片还大,没办法,git天生不适合存储大量图片.
+
 
 
 ## 如何接收更新
@@ -206,7 +234,13 @@ fast-forward
 
 ## 如何自动更新
 
-你可以依赖一些例如`crontab`的玩意来创建自动任务来更新,但是很明显这玩意不认识不会写,认识了也跟天书一样.所以我们可以用[巨硬](https://zhidao.baidu.com/question/1650077279199221540.html)制作的[Scalar](https://github.com/microsoft/git)工具来帮我们创建看不懂的自动任务.
+> [!TIP]
+>
+> 准确的来说`scalar`帮你省下了接收更新的时间,不会自动变更到最新的commit id.
+>
+> 所以此工具对于这个仓库来说仅用于接收更新,图片的checkout仍需要自己手动pull.
+
+你可以依赖一些例如`crontab`的玩意来创建自动任务来更新,但是很明显这玩意不认识的一定不会写,认识了也会写.所以我们可以用[巨硬](https://zhidao.baidu.com/question/1650077279199221540.html)制作的[Scalar](https://github.com/microsoft/git)工具来帮我们创建看不懂的自动任务.
 
 > [!NOTE]
 >
