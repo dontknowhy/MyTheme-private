@@ -1,6 +1,10 @@
- ### 防止失忆用文档
+ # 防止失忆用文档
 
-如何克隆这个~~智障~~仓库：
+如何克隆和维护这个~~智障~~仓库：
+
+> [!WARNING]
+>
+> 对于这种奇奇怪怪的Git用途来说一块还算比较健康的硬盘是刚需. Git一般没有特别的需求,但是读写在50MB/s且能稳定住的速度为佳. 如果不同这个指标的话你可以问问你自己一个问题: 我的设备开机很慢吗. 如果你的回答是`是`的话,那你依然可以正常游玩,但是在执行写盘操作会很痛苦,因为Git会浏览大量的文件来决定自己要快进哪些地方.
 
 ## 这个仓库功能着
 
@@ -236,9 +240,9 @@ fast-forward
 
 > [!TIP]
 >
-> 准确的来说`scalar`帮你省下了接收更新的时间,不会自动变更到最新的commit id.
+> 准确的来说`scalar`帮你省下了接收更新的时间,不会自动更新你的工作目录到最新的commit id.
 >
-> 所以此工具对于这个仓库来说仅用于接收更新,图片的checkout仍需要自己手动pull.
+> 所以此工具对于这个仓库来说仅用于接收更新,图片的检出还需要手动操作.
 
 你可以依赖一些例如`crontab`的玩意来创建自动任务来更新,但是很明显这玩意不认识的一定不会写,认识了也会写.所以我们可以用[巨硬](https://zhidao.baidu.com/question/1650077279199221540.html)制作的[Scalar](https://github.com/microsoft/git)工具来帮我们创建看不懂的自动任务.
 
@@ -287,7 +291,7 @@ scalar list
 最后可以尝试手动运行维护仓库进程:
 
 ```bash
-scalar run all
+scalar run all #后期发现你上边啥也不做这个步骤也会帮你完成
 ```
 
 会产生类似于下面的输出:
@@ -306,7 +310,32 @@ scalar run all
 
 #### Windows
 
-下次一定.
+类似,但确保Windows版本在10或以上.
+
+其余的使用
+
+```bash
+scalar run all
+```
+
+就会自动配置好
+
+## 自动更换壁纸
+
+> [!WARNING]
+>
+> 只有Windows才有[WinDynamicDesktop](https://github.com/t1m0thyj/WinDynamicDesktop/),其余平台[自己找](https://github.com/zzag/plasma5-wallpapers-dynamic)
+
+> [!IMPORTANT]
+>
+> Windows内置的幻灯片足够了,但是如果你想类似于保活一样的换壁纸还是这个好玩.
+
+1. 从[人家仓库的releases](https://github.com/t1m0thyj/WinDynamicDesktop/releases/latest)下载自己架构的安装包(不推荐下载带Portable标签的包)(你的电脑架构自行查询).
+2. 安装(麻烦默认配置不要动,顶多给我改桌面图标)
+3. 下载**这个仓库的**releases中的ddw文件(里边我随便挑了点用,WinDynamicDesktop很好改主题的,全是json)
+4. 双击打开ddw
+5. 完事了
+6. 你会发现几乎1分钟换一张
 
 ## 写在最后
 
@@ -343,6 +372,8 @@ scalar run all
 写出Upscayl所使用的AI放大算法软件基底的[xinntao大佬(不知道中文捏)](https://github.com/xinntao/Real-ESRGAN)
 
 用来优化jpeg的[jpegoptim](https://github.com/tjko/jpegoptim)工具
+
+许久未更新的[mozjpeg](https://github.com/mozilla/mozjpeg)
 
 我压根不知道高级功能但是已经离不开的~~臭名昭著的电脑勒索病毒~~[Vim](https://github.com/vim/vim)
 
