@@ -12,14 +12,6 @@ cfg_key_nightime = "nightImageList"
 cfg_hack_remove_char = '"'
 #<<< config Stop
 
-class CustomEncoder(json.JSONEncoder):
-    def iterencode(self, o, _one_shot=False):
-        if isinstance(o, str):
-            # 不对字符串值进行转义或添加双引号
-            yield o
-        else:
-            yield from super().iterencode(o, _one_shot)
-
 def count_files(folder, extension): #计算目录下文件
     filecount = 0 #声明文件数量先为0
     for root, dirs, files in os.walk(folder):
