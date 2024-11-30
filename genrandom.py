@@ -48,8 +48,14 @@ def mod_json(file_path, key, new_value): #json
     for line in lines:
         if cfg_key_daytime in line:
             # 去除指定的字符
-            new_line = line.replace(cfg_hack_remove_char, '')
-            processed_lines.append(new_line)
+            line = line.replace(cfg_hack_remove_char, '')
+            start_index = line.find(cfg_key_daytime)
+            end_index = start_index + len(cfg_key_daytime)
+
+            # 在目标字符串前后加上双引号
+            line = line[:start_index] + '"' + line[start_index:end_index] + '"' + line[end_index:]
+            print(line)
+            processed_lines.append(line)
         elif cfg_key_nightime in line:
             new_line = line.replace(cfg_hack_remove_char, '')
             processed_lines.append(new_line)
