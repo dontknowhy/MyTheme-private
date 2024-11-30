@@ -1,14 +1,26 @@
 import random
 import os
 import json
-import re
 #学校教了点蟒蛇
 #config start>>>
 cfg_folder = "./" #扫描当前目录
 cfg_extension = ".jpg" #预览图为png文件,应该不会变化
 cfg_json_path = "./theme.json"
+###
 cfg_key_daytime = "dayImageList"
 cfg_key_nightime = "nightImageList"
+cfg_key_displayName = "displayName"
+cfg_key_imageFilename = "imageFilename"
+cfg_key_imageCredits = "imageCredits"
+cfg_key_dayHighlight = "dayHighlight"
+cfg_key_nightHighlight = "nightHighlight"
+###
+cfg_displayName = "Roll out the pics"
+cfg_imageFilename = "*.jpg"
+cfg_imageCredits = "dontknowhy"
+cfg_dayHighlight = "13"
+cfg_nightHighlight = "23"
+###
 cfg_hack_remove_char = '"'
 #<<< config Stop
 
@@ -23,15 +35,12 @@ def count_files(folder, extension): #计算目录下文件
 def mod_json(file_path, key, new_value): #json
     with open(file_path, 'r', encoding='utf-8') as file:
         data = json.load(file) #load json
-
-    keys = key.split('.') #modify json
-    for key in keys[:-1]:
-        data = data.setdefault(key, {})
-    data[keys[-1]] = new_value
+    data[key] = new_value
 
     with open(file_path, 'w', encoding='utf-8') as file:
         json.dump(data, file, ensure_ascii=False, indent=4)
 
+def hack(file_path):
     ###非常坏hack工作,你还要在写好json之后再操作
     ###因为WinDynamicDesktop对于dayImageList和nightImageList指定需要下面的格式,其他的会报错
     ###"dayImageList" : [1,2,3,4,69]
@@ -53,32 +62,19 @@ def mod_json(file_path, key, new_value): #json
             end_index = start_index + len(cfg_key_daytime)
 
             # 在目标字符串前后加上双引号
-            line = line[:start_index] + '"' + line[start_index:end_index] + '"' + line[end_index:]
-            print(line)
+            line = line[:start_index] + cfg_hack_remove_char + line[start_index:end_index] + cfg_hack_remove_char + line[end_index:]
             processed_lines.append(line)
+
         elif cfg_key_nightime in line:
-            new_line = line.replace(cfg_hack_remove_char, '')
-            processed_lines.append(new_line)
-        else:
-            processed_lines.append(line)
-
-    lines = processed_lines
-    for i in range(len(lines)):
-        if cfg_key_daytime in lines[i]:
-            # 找到目标字符串的位置
-            start_index = lines[i].find(cfg_key_daytime)
-            end_index = start_index + len(cfg_key_daytime)
-
-            # 在目标字符串前后加上双引号
-            lines[i] = lines[i][:start_index] + '"' + lines[i][start_index:end_index] + '"' + lines[i][end_index:]
-        elif cfg_key_nightime in lines[i]:
-            # 找到目标字符串的位置
-            start_index = lines[i].find(cfg_key_nightime)
+            line = line.replace(cfg_hack_remove_char, '')
+            start_index = line.find(cfg_key_nightime)
             end_index = start_index + len(cfg_key_nightime)
 
             # 在目标字符串前后加上双引号
-            lines[i] = lines[i][:start_index] + '"' + lines[i][start_index:end_index] + '"' + lines[i][end_index:]
-    processed_lines = lines
+            line = line[:start_index] + cfg_hack_remove_char + line[start_index:end_index] + cfg_hack_remove_char + line[end_index:]
+            processed_lines.append(line)
+        else:
+            processed_lines.append(line)
 
     # 将处理后的行写回文件
     with open(file_path, 'w', encoding='utf-8') as file:
@@ -87,9 +83,15 @@ def mod_json(file_path, key, new_value): #json
 
 def shuffle_list(count):
     count = count + 1 #因为这玩意不会包括最后一个数字
-    i = 0
+    i = 1 #第一张图一定为1号
     list_s = [i for i in range(i,count)]
     random.shuffle(list_s)
+    random.shuffle(list_s)
+    random.shuffle(list_s)
+    random.shuffle(list_s)
+    random.shuffle(list_s)
+    random.shuffle(list_s)
+    #整几次让她更随机点(?
     #list_s = [str(i) for i in list_s]
     list_s = str(list_s)
     #list_s = [(','.join(list_s))]
@@ -99,12 +101,19 @@ def shuffle_list(count):
 count = count_files(cfg_folder, cfg_extension)
 print("This folder has", count, "files with extension:", cfg_extension)
 
-print("Generating DayTime list...")
+print("Generating DayTime and NightTime list...")
 DayTime_list = shuffle_list(count)
 NightTime_list = shuffle_list(count)
 
 print("Writing things above to", cfg_json_path)
 mod_json(cfg_json_path, cfg_key_daytime, DayTime_list)
 mod_json(cfg_json_path, cfg_key_nightime, NightTime_list)
+
+mod_json(cfg_json_path, cfg_key_displayName, cfg_displayName)
+mod_json(cfg_json_path, cfg_key_imageFilename, cfg_imageFilename)
+mod_json(cfg_json_path, cfg_key_imageCredits, cfg_imageCredits)
+mod_json(cfg_json_path, cfg_key_dayHighlight, cfg_dayHighlight)
+mod_json(cfg_json_path, cfg_key_nightHighlight, cfg_nightHighlight)
+hack(cfg_json_path)
 
 print("done")
