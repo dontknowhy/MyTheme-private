@@ -14,7 +14,7 @@
 4. 大哥我错了真的不想拿来大规模传播的.
 5. 可能缺失的句号
 6. 并没有的[官方正版下载链接](https://www.bilibili.com).
-7. 并不想使用Noto Sans CJK SC的Typora写成的文档.
+7. 并不想使用Noto Sans CJK的Typora写成的文档.
 8. 乱写的commit message.
 9. 压根不合适的源码管理器.
 10. 转人工.
@@ -332,10 +332,23 @@ scalar run all
 
 1. 从[人家仓库的releases](https://github.com/t1m0thyj/WinDynamicDesktop/releases/latest)下载自己架构的安装包(不推荐下载带Portable标签的包)(你的电脑架构自行查询).
 2. 安装(麻烦默认配置不要动,顶多给我改桌面图标)
-3. 下载**这个仓库的**releases中的ddw文件(里边我随便挑了点用,WinDynamicDesktop很好改主题的,全是json)
-4. 双击打开ddw
+3. 下载**这个仓库的**releases中的ddw文件或选择使用仓库中的WinDynamicDesktop分支(里边我随便挑了点用,WinDynamicDesktop很好改主题的,全是json)
+4. 双击打开ddw,如果是git分支的话自行研究克隆到Appdata\Local\WinDynamicDesktop\themes内
 5. 完事了
 6. 你会发现几乎1分钟换一张
+
+
+
+## 维护小贴士
+
+1. 准备编译jpegoptim时记得链接mozjpeg,如果事后强行加载会无法启动
+2. 使用jpegoptim的`-m`参数去压缩图片而不是图片编辑(在我这是GIMP)内置的压缩,很显然的是jpegoptim的压缩效果会因为调用了mozjpeg而小一点或很多(具体的:`--strip-none -f -w 20 --all-progressive -m 85`,`-w`部分可以指定别的,我喜欢是20)
+3. 不清楚有没有效果,我使用的[upscayl-bin](https://github.com/upscayl/upscayl-ncnn)主体是自己替换掉更新的libwebp和ncnn还有`stb_image.h`等依赖的,因为上一次更新依赖是2年前,在这之后的ncnn版本都可以直接灌进去编译,所以为何不嘛
+4. 如果自己编译的组件,建议使用`-march=native`之类的优化flag给编译器,对于我的Clang 19来说是:`-Ofast -pipe -march=native -Wno-unused-command-line-argument -mllvm -polly -mllvm -polly-vectorizer=stripmine -flto=thin -mllvm -polly-parallel -mllvm -polly-omp-backend=LLVM -fuse-ld=/usr/bin/ld.lld-19 -mllvm -polly-run-inliner -mllvm -polly-run-dce -fno-semantic-interposition -fvisibility=hidden -mllvm -polly-invariant-load-hoisting -fopenmp=libomp`,什么是更多的,可以给NCNN传递额外的编译选项来稍微给小亮整个活:`-DNCNN_ENABLE_LTO=ON -DNCNN_SIMPLEVK=OFF`
+5. 如果很在乎的话,我用的升采样模型是`4xNomos8kSC`
+6. 编译flag都是自己随便瞎写的憋骂了,WinDynamicDesktop分支的Python脚本很烂是真的
+
+
 
 ## 写在最后
 
