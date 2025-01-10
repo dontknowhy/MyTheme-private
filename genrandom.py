@@ -1,11 +1,18 @@
+#!/usr/bin/python3
 import random
 import os
 import json
+import platform
+# 网上拷贝的按任意键退出的模块
+import sys
+import tty
+import termios
+
 #学校教了点蟒蛇
 #config start>>>
-cfg_folder = "./" #扫描当前目录
+cfg_folder = os.path.dirname(os.path.realpath(__file__)) #扫描当前目录
 cfg_extension = ".jpg" #预览图为png文件,应该不会变化
-cfg_json_path = "./theme.json"
+cfg_json_path = os.path.dirname(os.path.realpath(__file__)) + "/theme.json"
 ###
 cfg_key_daytime = "dayImageList"
 cfg_key_nightime = "nightImageList"
@@ -22,6 +29,8 @@ cfg_dayHighlight = "13"
 cfg_nightHighlight = "23"
 ###
 cfg_hack_remove_char = '"'
+###
+cfg_shuffle_time = "10000" # 不知道为啥要这么多次,可能吃满你的单核很酷
 #<<< config Stop
 
 def count_files(folder, extension): #计算目录下文件
@@ -85,18 +94,31 @@ def shuffle_list(count):
     count = count + 1 #因为这玩意不会包括最后一个数字
     i = 1 #第一张图一定为1号
     list_s = [i for i in range(i,count)]
-    random.shuffle(list_s)
-    random.shuffle(list_s)
-    random.shuffle(list_s)
-    random.shuffle(list_s)
-    random.shuffle(list_s)
-    random.shuffle(list_s)
+    for i in range(int(cfg_shuffle_time)): # 强制转int防止出事
+        random.shuffle(list_s)
     #整几次让她更随机点(?
     #list_s = [str(i) for i in list_s]
     list_s = str(list_s)
     #list_s = [(','.join(list_s))]
     #list_final = list_s.replace('"', '')
     return list_s
+
+def press_2_exit(msg):
+    fd = sys.stdin.fileno()
+    old_settings = termios.tcgetattr(fd)
+    try:
+        tty.setraw(fd)
+        print(msg, end='', flush=True)
+        sys.stdin.read(1)  # 读取一个字符
+    finally:
+        termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+
+# Main funtion
+# 检测是否为Windows,因为我不在Windows维护仓库,嘻嘻
+current_os = platform.system()
+if current_os == "Windows":
+    print("检测到Windows操作系统，程序将退出。")
+    exit(1)  # 退出程序并返回状态码1，表示错误
 
 count = count_files(cfg_folder, cfg_extension)
 print("This folder has", count, "files with extension:", cfg_extension)
@@ -117,3 +139,5 @@ mod_json(cfg_json_path, cfg_key_nightHighlight, cfg_nightHighlight)
 hack(cfg_json_path)
 
 print("done")
+#按任意键退出,防止运行后看不见干啥了
+press_2_exit("请按除了电源键,重启按键,Ctrl键,Alt键,CapsLock键,Shift键以外的任意键退出")
