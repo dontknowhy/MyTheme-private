@@ -1,0 +1,8 @@
+*.outside*
+*.db*
+*scalar*
+input/*.jpg
+input/*.png
+tmp/*.jpg
+tmp/*.png
+.nomedia
