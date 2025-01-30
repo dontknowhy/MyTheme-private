@@ -9,15 +9,36 @@
 ## 这个仓库功能着
 
 1. 惊人的半角全角区别.
+
 2. 不太准确但是It Just Works的信息.
+
 3. 很容易被DMCA的图片.
+
 4. 大哥我错了真的不想拿来大规模传播的.
+
 5. 可能缺失的句号
+
 6. 并没有的[官方正版下载链接](https://www.bilibili.com).
+
 7. 并不想使用Noto Sans CJK的Typora写成的文档.
+
 8. 乱写的commit message.
+
 9. 压根不合适的源码管理器.
+
 10. 转人工.
+
+    
+
+## 分支小注记
+
+| 名称                         | 用处                                                         |         你在何时改选          |
+| ---------------------------- | ------------------------------------------------------------ | :---------------------------: |
+| main                         | 主要的分支,用来存放其他分支包含的所有基础的图片文件          |      想一下获取到所有图       |
+| WinDynamicDesktop (准备废弃) | 用以提供WinDynamic支持,现已经过载且不一定会自动更换          |    PHP变成第一流行的语言时    |
+| selected                     | 从WinDynamicDesktop剥离出来的纯图片,可以克隆到文件夹并由支持文件夹内循环/乱序播放壁纸的壁纸软件(Windows的幻灯片,或者带slideshow功能的DE) | 不想用WinDynamicDesktop的时候 |
+
+
 
 ## SSH
 
@@ -329,6 +350,8 @@ scalar run all
 > [!IMPORTANT]
 >
 > Windows内置的幻灯片足够了,但是如果你想类似于保活一样的换壁纸还是这个好玩.
+>
+> WinDynamicDesktop准备废弃
 
 1. 从[人家仓库的releases](https://github.com/t1m0thyj/WinDynamicDesktop/releases/latest)下载自己架构的安装包(不推荐下载带Portable标签的包)(你的电脑架构自行查询).
 2. 安装(麻烦默认配置不要动,顶多给我改桌面图标)
