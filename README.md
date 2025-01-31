@@ -8,7 +8,7 @@
 
 ## 这个仓库功能着
 
-1. 惊人的半角全角区别.
+1. ~~惊人的半角全角区别.~~给我全局替换好了
 
 2. 不太准确但是It Just Works的信息.
 
@@ -22,13 +22,19 @@
 
 7. 并不想使用Noto Sans CJK的Typora写成的文档.
 
-8. 乱写的commit message.
+8. ~~乱写的commit message.~~
 
 9. 压根不合适的源码管理器.
 
-10. 转人工.
+10. 看起来很明显是拿AI放大出来的图片(然而是的)
 
     
+
+>大量使用AI放大模型意味着很多都带有AI味,但是理由是很多收集来的毛五都是在1080p左右,只有兼任摄影师的才会注意上传原图或者最起码原图缩小两倍分辨率的图.这就意味着我想看见分辨率齐刷刷统一的图集就要AI放大.
+>
+>维护期间我也更换了一次AI放大模型(从[RemaCRI](https://huggingface.co/FacehugmanIII/4x_foolhardy_Remacri/tree/main)到[Nomos8KSC](https://github.com/Phhofm/models/raw/main/4xNomos8kSC/)),所以放大效果不一样,前者偏向锐化且不适合多毛的场景,后者偏向毛发但是对背景的处理不够好.
+>
+>我也使用[LaMa](https://github.com/advimman/lama)来去除水印,主要因为不喜欢桌面有除了激活Windows之外的水印,后者可以自己关掉,前者就需要做点工作了,抱歉.
 
 ## 分支小注记
 
@@ -42,9 +48,9 @@
 
 ## SSH
 
-> 你最开始需要做的是自己注册个GitHub账户,如果遇到什么访问不了的问题自行解决，都来这看了不有个号怎么行呢。
+> 你最开始需要做的是自己注册个GitHub账户,如果遇到什么访问不了的问题自行解决,都来这看了不有个号怎么行呢. 
 
-检查自己有ssh密钥没。一般来说都可以在[这里](https://docs.github.com/zh/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account)查看文档来自行添加一个（ssh密钥是通用的，但通常推荐每个获得Github访问权限的设备都有单独的密钥，万一真的出事了可以方便注销密钥）
+检查自己有ssh密钥没. 一般来说都可以在[这里](https://docs.github.com/zh/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account)查看文档来自行添加一个（ssh密钥是通用的,但通常推荐每个获得Github访问权限的设备都有单独的密钥,万一真的出事了可以方便注销密钥）
 
 > [!CAUTION]
 >
@@ -54,7 +60,7 @@
 
 > [!WARNING]
 >
-> GitHub对于ssh密钥的访问貌似很宽松，不要泄漏你的密钥，否则删库从梦想走进现实。
+> GitHub对于ssh密钥的访问貌似很宽松,不要泄漏你的密钥,否则删库从梦想走进现实. 
 
 1. 创建一个密钥：
 
@@ -68,9 +74,9 @@
    Enter file in which to save the key (/home/dontknowhy/.ssh/id_rsa):
    ```
 
-   这时候最好直接回车，因为这块小破地方ssh尝试连接时会寻找这里的密钥 (家目录的`.ssh`文件夹) 进行验证（记得拷贝括号的内容，后面有用）
+   这时候最好直接回车,因为这块小破地方ssh尝试连接时会寻找这里的密钥 (家目录的`.ssh`文件夹) 进行验证（记得第二行拷贝括号的内容,后面有用）
 
-   之后按照提示输入一个密码(最好是强密码)，你就有个密钥了
+   之后按照提示输入一个密码(最好是强密码),你就有个密钥了
 
    ```
    Generating public/private rsa key pair.
@@ -100,26 +106,26 @@
    把上面说复制的内容准备好
 
    ````
-   $ cat *你刚才复制的内容，后面加上.pub*
+   $ cat *你刚才复制的内容,后面加上.pub*
    ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCLuwIjqqm7Qy1PaxzvLEVjRVFtPIWj1KaHUIGqDM853KATRsbdvQG5nibKfjrj/g9VsVG4Mq/lQ26JCxLi5ZVI7YAUHq9hMLwnyFx99pVlXzt4GagifmVWX86kbPzFXi8BfvaYFYZR1Wlb3+BC0wOWIK0ZbMvCl1m+Q8IND8jOJYOp2GmvcXqB2DZIIF0OhQWyzMcfy7jR1db4yl5i0fHc8EKHZO20xaZXAvHlCt0008TmF6+xTlkyLylEZzObq1Fo7jNJkgYd1+fEVi1Qs93gyfj3QQQzyToSg8Fl2qj6bfalv0WmUwdrqBfADHWE/6tPcnTmc4cQmHH1pszVBKmP23pXJOxfmx0JhBZEaNep6tG6gioVQPrW2/FO86jb47MoJfq7z9T5okylHM3F+EcEqOEEYL2dWi+vV15eOcoS3/R+lZw+hHGYPlXCBRft+DKqveVIECBD5+kaBi+DwdlICGjJhhU2xskF7ThPdW3wObJqD6Xe/D6qWbPf0waVZss= dontknowhy@sb-debian
    ````
 
-   把上面输出的内容给复制好。
+   把上面输出的内容给复制好. 
 
 3. 喂给[~~GutHib~~](https://guthib.com)你新鲜的公钥
 
-   进入GitHub官网，点右上角你的~~随机生成~~的头像，点`Settings`，再点`SSH and GPG keys`，接着是`New SSH key` ，在`Title`输入备注(例如用于哪个设备的)，在`Key`栏目输入你刚才复制的内容，最后点`Add SSH key`完成添加。
+   进入GitHub官网,点右上角你的~~随机生成~~的头像,点`Settings`,再点`SSH and GPG keys`,接着是`New SSH key` ,在`Title`输入备注(例如用于哪个设备的),在`Key`栏目输入你刚才复制的内容,最后点`Add SSH key`完成添加. 
 
 4. 看看~~GayHub~~认识不认识你的密钥
 
-   在终端输入`ssh git@github.com`，如果你的密钥设置了密码此时会询问密码，完成后你应该看得见：
+   在终端输入`ssh git@github.com`,如果你的密钥设置了密码此时会询问密码,完成后你应该看得见：
 
    ```
    Hi dontknowhy! You've successfully authenticated, but GitHub does not provide shell access.
    Connection to github.com closed.
    ```
 
-   如果~~GitCode~~对你问好那你就可以用这个密钥愉快进行操作了。
+   如果~~GitCode~~对你问好那你就可以用这个密钥愉快进行操作了. 
 
 5. 透过ssh克隆这个仓库
 
@@ -127,11 +133,11 @@
 
    注释: 1.  `--depth=1`只仅克隆一层仓库,人话就是哥们不用下载我黑历史,另外也有助于你节省磁盘空间
 
-   2. `-j 16`可以加速下载，如果失败请改成`-j 8`。在广东特供中国移动可以跑到5M/s，但其他网络一般都有效，且流量全程被你的密钥加密。
+   2. `-j 16`可以加速下载,如果失败请改成`-j 8`.在广东特供中国移动可以跑到5M/s,但其他网络一般都有效.且流量全程被你的密钥加密.
 
 ## `gh`工具？
 
-很遗憾的是`gh`工具即使你登陆的时候用ssh密钥了，克隆仓库还是会使用一等一慢的https。但是好消息是她上传releases的速度很快。
+很遗憾的是`gh`工具即使你登陆的时候用ssh密钥了,克隆仓库还是会使用一等一慢的https. 但是好消息是她上传releases的速度很快.
 
 ## 快速克隆
 
@@ -143,19 +149,19 @@
 
 > [!NOTE]
 >
-> （当然我没有成功过，放这玩的）
+> （当然我没有成功过,放这玩的）
 
-你也可以试试[KGitHub](https://help.kkgithub.com/donate/)(点进去是赞助人家的链接，爆点米给人家罢)
+你也可以试试[KGitHub](https://help.kkgithub.com/donate/)(点进去是赞助人家的链接,爆点米给人家罢)
 
 > **KGitHub目前的限制：**
 >
 > 1.不能注册
 >
-> 2.不能上传文件，可以登录，可以在线编辑
+> 2.不能上传文件,可以登录,可以在线编辑
 >
 > 3.来自raw.githubusercontent.com的下载可使用raw.kkgithub.com替代
 >
-> 4.仓库拦截采用黑名单关键字拦截，若产生误判可联系站长邮箱（kgithub@uoo.im）处理
+> 4.仓库拦截采用黑名单关键字拦截,若产生误判可联系站长邮箱（kgithub@uoo.im）处理
 
 `git clone --depth=1 -j 16 https://kkgithub.com/dontknowhy/MyTheme-private.git`
 
@@ -167,7 +173,7 @@
 
 感觉不如[____](https://ys-api.mihoyo.com/event/download_porter/link/ys_cn/official/android_default).
 
-如果GFW漏风都是万幸。
+如果GFW漏风都是万幸.
 
 如果你为自己创造了良好的网络环境(大嘘)的话可以用.
 
@@ -193,27 +199,27 @@
 
    ```bash
    # 这里边还是有些多余的我闲着没事干加上去的配置
-   git config --global checkout.workers 20
-   git config --global core.compression 9
-   git config --global pack.comppression 9
-   git config --global pack.threads 20
-   git config --global index.threads 20
-   git config --global repack.cruftThreads 20
-   git config --global http.minSessions 5
-   git config --global http.maxRequests 5
-   git config --global http.postBuffer 5M
-   git config --global http.lowSpeedLimit 0
-   git config --global http.lowSpeedTime 999999
-   git config --global core.fscache true
-   git config --global core.preloadindex true
-   git config --global gc.auto 256
-   git config --global core.multiPackIndex true
-   git config --global pack.useSparse true
+   git config checkout.workers 20
+   git config core.compression 9
+   git config pack.comppression 9
+   git config pack.threads 20
+   git config index.threads 20
+   git config repack.cruftThreads 20
+   git config http.minSessions 5
+   git config http.maxRequests 5
+   git config http.postBuffer 5M
+   git config http.lowSpeedLimit 0
+   git config http.lowSpeedTime 999999
+   git config core.fscache true
+   git config core.preloadindex true
+   git config gc.auto 256
+   git config core.multiPackIndex true
+   git config pack.useSparse true
    ```
 
 > [!WARNING]
 >
-> 这些commit有助于减小`.git`文件夹的大小,所以务必应用完后运行:
+> 这些config有助于减小`.git`文件夹的大小,所以务必应用完后运行:
 >
 > ```bash
 > git gc --prune=now
@@ -324,7 +330,7 @@ scalar run all #后期发现你上边啥也不做这个步骤也会帮你完成
 使用 16 个线程进行压缩压缩对象中: 100% (61/61), 完成.
 47d6e6467f35194610c51c91aa638d267d6d5201
 写入对象中: 100% (61/61), 完成.
-总共 61（差异 0），复用 0（差异 0），包复用 0（来自  0 个包）枚举对象中: 160, 完成.
+总共 61（差异 0）,复用 0（差异 0）,包复用 0（来自  0 个包）枚举对象中: 160, 完成.
 ```
 
 最后`Scalar`会以每小时,每天,每周的频率维护仓库.
