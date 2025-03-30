@@ -2,6 +2,10 @@
 
 如何克隆和维护这个~~智障~~仓库：
 
+神秘小标签(GutHib网页版默认不渲染)
+
+<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=530 height=86 src="//music.163.com/outchain/player?type=2&id=2657613721&auto=1&height=66"></iframe>
+
 > [!WARNING]
 >
 > 对于这种奇奇怪怪的Git用途来说一块还算比较健康的硬盘是刚需. Git一般没有特别的需求,但是读写能在USB3.0标准速率且能稳定住的速度为佳. 如果不同这个指标的话你可以问问你自己一个问题: 我的设备开机很慢吗. 如果你的回答是`是`的话,那你依然可以正常游玩,但是在执行写盘操作会很痛苦,因为Git会浏览大量的文件来决定自己要操作哪些地方.
@@ -9,32 +13,23 @@
 ## 这个仓库功能着
 
 1. ~~惊人的半角全角区别.~~给我全局替换好了
-
 2. 不太准确但是It Just Works的信息.
-
 3. 很容易被DMCA的图片.
-
 4. 大哥我错了真的不想拿来大规模传播的.
-
 5. 可能缺失的句号
-
 6. 并没有的[官方正版下载链接](https://www.bilibili.com).
-
 7. 并不想使用Noto Sans CJK的Typora写成的文档.
-
 8. ~~乱写的commit message.~~
-
 9. 压根不合适的源码管理器.
-
 10. 看起来很明显是拿AI放大出来的图片(然而是的)
-
-    
 
 >大量使用AI放大模型意味着很多都带有AI味,但是理由是很多收集来的毛五都是在1080p左右,只有兼任摄影师的才会注意上传原图或者最起码原图缩小两倍分辨率的图.这就意味着我想看见分辨率齐刷刷统一的图集就要AI放大.
 >
 >维护期间我也更换了一次AI放大模型(从[RemaCRI](https://huggingface.co/FacehugmanIII/4x_foolhardy_Remacri/tree/main)到[Nomos8KSC](https://github.com/Phhofm/models/raw/main/4xNomos8kSC/)),所以放大效果不一样,前者偏向锐化且不适合多毛的场景,后者偏向毛发但是对背景的处理不够好.
 >
 >我也使用[LaMa](https://github.com/advimman/lama)来去除水印,主要因为不喜欢桌面有除了激活Windows之外的水印,后者可以自己关掉,前者就需要做点工作了,抱歉.
+
+[![I - USE](https://img.shields.io/badge/I-USE-d70751?style=for-the-badge)](https://debian.org) [![Debian - BTW](https://img.shields.io/badge/Debian-BTW-d70751?style=for-the-badge&logo=Debian&logoColor=d70751)](https://debian.org)
 
 ## 分支小注记
 
@@ -425,6 +420,9 @@ scalar run all
 4. 如果自己编译的组件,建议使用`-march=native`之类的优化flag给编译器,对于我的Clang 19来说是:`-Ofast -pipe -march=native -Wno-unused-command-line-argument -mllvm -polly -mllvm -polly-vectorizer=stripmine -flto=thin -mllvm -polly-parallel -mllvm -polly-omp-backend=LLVM -fuse-ld=/usr/bin/ld.lld-19 -mllvm -polly-run-inliner -mllvm -polly-run-dce -fno-semantic-interposition -fvisibility=hidden -mllvm -polly-invariant-load-hoisting -fopenmp=libomp`,什么是更多的,可以给NCNN传递额外的编译选项来稍微给小亮整个活:`-DNCNN_ENABLE_LTO=ON -DNCNN_SIMPLEVK=OFF`
 5. 如果很在乎的话,我用的升采样模型是`4xNomos8kSC`
 6. 编译flag都是自己随便瞎写的憋骂了,WinDynamicDesktop分支的Python脚本很烂是真的
+7. [upscayl-bin](https://github.com/upscayl/upscayl-ncnn)放大出来的图会出现有透明边的情况(具体为竖屏图片的下边,横屏图片的右边,有4像素的偏移,不能稳定触发但是概率很高),后期自行裁切.
+8. 添加了实验性的[sync_metadata.sh](./scripts/sync_metadata.sh),用于拷贝原图片的元数据,如果被压缩到1080p的情况下无解.
+9.  <img src="./doc/gimp-cfg.jpg" width = "300" alt="GIMP config screenshot" align=center />
 
 
 
@@ -471,3 +469,6 @@ scalar run all
 在[BiliBili](https://www.bilibili.com)生活的各位兽兽还有摄影师们,抱歉随意拿走你们的幸苦成果了:(
 
 <!--又不是最终结算写这么多干啥-->
+
+![Debian button](./doc/Debian-button.gif)
+
