@@ -1,26 +1,22 @@
- # 防止失忆用文档
+ # 我是文档
 
 如何克隆和维护这个~~智障~~仓库：
 
-神秘小标签(GutHib网页版默认不渲染)
-
-<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=530 height=86 src="//music.163.com/outchain/player?type=2&id=2657613721&auto=1&height=66"></iframe>
-
 > [!WARNING]
 >
-> 对于这种奇奇怪怪的Git用途来说一块还算比较健康的硬盘是刚需. Git一般没有特别的需求,但是读写能在USB3.0标准速率且能稳定住的速度为佳. 如果不同这个指标的话你可以问问你自己一个问题: 我的设备开机很慢吗. 如果你的回答是`是`的话,那你依然可以正常游玩,但是在执行写盘操作会很痛苦,因为Git会浏览大量的文件来决定自己要操作哪些地方.
+> 对于这种奇奇怪怪的Git用途来说一块还算比较健康的硬盘是刚需(尤其是没有办法开[Git LFS](https://docs.github.com/zh/repositories/working-with-files/managing-large-files/about-git-large-file-storage)). Git一般没有特别的需求,但是读写能在USB3.0标准速率且能稳定住的速度为佳. 如果不同这个指标的话你可以问问你自己一个问题: 我的设备开机很慢吗. 如果你的回答是`是`的话,那你依然可以正常游玩,但是在执行写盘操作会很痛苦,因为Git会浏览大量的文件来决定自己要操作哪些地方.
 
 ## 这个仓库功能着
 
-1. ~~惊人的半角全角区别.~~给我全局替换好了
+1. ~~惊人的半角全角区别.~~给我全局替换好了.
 2. 不太准确但是It Just Works的信息.
 3. 很容易被DMCA的图片.
 4. 大哥我错了真的不想拿来大规模传播的.
 5. 可能缺失的句号
 6. 并没有的[官方正版下载链接](https://www.bilibili.com).
 7. 并不想使用Noto Sans CJK的Typora写成的文档.
-8. ~~乱写的commit message.~~
-9. 压根不合适的源码管理器.
+8. ~~乱写的commit message.~~统一改成一个词了.
+9. 压根不合适的源码管理.
 10. 看起来很明显是拿AI放大出来的图片(然而是的)
 
 >大量使用AI放大模型意味着很多都带有AI味,但是理由是很多收集来的毛五都是在1080p左右,只有兼任摄影师的才会注意上传原图或者最起码原图缩小两倍分辨率的图.这就意味着我想看见分辨率齐刷刷统一的图集就要AI放大.
@@ -37,11 +33,11 @@
 | ---------------------------- | ------------------------------------------------------------ | :---------------------------: |
 | main                         | 主要的分支,用来存放其他分支包含的所有基础的图片文件          |      想一下获取到所有图       |
 | WinDynamicDesktop (准备废弃) | 用以提供WinDynamic支持,现已经过载且不一定会自动更换          |    PHP变成第一流行的语言时    |
-| selected                     | 从WinDynamicDesktop剥离出来的纯图片,可以克隆到文件夹并由支持文件夹内循环/乱序播放壁纸的壁纸软件(Windows的幻灯片,或者带slideshow功能的DE) | 不想用WinDynamicDesktop的时候 |
+| selected                     | 从WinDynamicDesktop剥离出来的纯图片,可以克隆到文件夹并由支持文件夹内循环/乱序播放壁纸的壁纸软件(Windows的幻灯片,或者带幻灯片功能的DE) | 不想用WinDynamicDesktop的时候 |
 
 
 
-## SSH
+## SSH克隆
 
 > 你最开始需要做的是自己注册个GitHub账户,如果遇到什么访问不了的问题自行解决,都来这看了不有个号怎么行呢. 
 
@@ -49,7 +45,7 @@
 
 > [!CAUTION]
 >
-> 由于涉及到直接与长城之外的GitHub服务器连接,所以出国流量大的时候最好不要尝试去连接.
+> 由于涉及到直接与长城之外的GitHub服务器连接,所以国际流量大的时候最好不要尝试去连接.
 >
 > 具体时间看各大高校的镜像站同步内容的时间,大部分都在每日的晚上.
 
@@ -160,15 +156,13 @@
 
 `git clone --depth=1 -j 16 https://kkgithub.com/dontknowhy/MyTheme-private.git`
 
-或者去寻找一些proxy方案,例如[GitHub Proxy](https://ghp.ci/donate)
+或者去寻找一些proxy方案,例如[GitHub Proxy](https://ghproxy.cfd)
 
-`git clone --depth=1 -j 16 https://ghp.ci/https://github.com/dontknowhy/MyTheme-private.git`
+`git clone --depth=1 -j 16 https://ghproxy.cfd/https://github.com/dontknowhy/MyTheme-private.git`
 
 ## `github.com`永不为奴！
 
 感觉不如[____](https://ys-api.mihoyo.com/event/download_porter/link/ys_cn/official/android_default).
-
-如果GFW漏风都是万幸.
 
 如果你为自己创造了良好的网络环境(大嘘)的话可以用.
 
@@ -469,6 +463,10 @@ scalar run all
 在[BiliBili](https://www.bilibili.com)生活的各位兽兽还有摄影师们,抱歉随意拿走你们的幸苦成果了:(
 
 <!--又不是最终结算写这么多干啥-->
+
+神秘小标签(GutHib网页版默认不渲染)
+
+<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=530 height=86 src="//music.163.com/outchain/player?type=2&id=2657613721&auto=1&height=66"></iframe>
 
 ![Debian button](./doc/Debian-button.gif)
 
