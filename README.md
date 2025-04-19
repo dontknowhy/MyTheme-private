@@ -15,7 +15,7 @@
 5. 可能缺失的句号
 6. 并没有的[官方正版下载链接](https://www.bilibili.com).
 7. 并不想使用Noto Sans CJK的Typora写成的文档.
-8. ~~乱写的commit message.~~统一改成一个词了.
+8.  ~~乱写的commit message.~~ 统一改成一个词了.
 9. 压根不合适的源码管理.
 10. 看起来很明显是拿AI放大出来的图片(然而是的)
 
@@ -415,8 +415,9 @@ scalar run all
 5. 如果很在乎的话,我用的升采样模型是`4xNomos8kSC`
 6. 编译flag都是自己随便瞎写的憋骂了,WinDynamicDesktop分支的Python脚本很烂是真的
 7. [upscayl-bin](https://github.com/upscayl/upscayl-ncnn)放大出来的图会出现有透明边的情况(具体为竖屏图片的下边,横屏图片的右边,有4像素的偏移,不能稳定触发但是概率很高),后期自行裁切.
-8. 添加了实验性的[sync_metadata.sh](./scripts/sync_metadata.sh),用于拷贝原图片的元数据,如果被压缩到1080p的情况下无解.
-9.  <img src="./doc/gimp-cfg.jpg" width = "300" alt="GIMP config screenshot" align=center />
+8. 添加了实验性的[sync_metadata.sh](./scripts/sync_metadata.sh),用于拷贝原图片的元数据,如果真的有摄影师看到这的话麻烦在IPTC里边写自己的大名.如果被压缩到1080p的情况下无解.
+9. <img src="./doc/gimp-cfg.jpg" width = "300" alt="GIMP config screenshot" align=center />
+10. 上面的GIMP截图应该加上保存IPTC
 
 
 
@@ -466,7 +467,11 @@ scalar run all
 
 神秘小标签(GutHib网页版默认不渲染)
 
+
+
 <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=530 height=86 src="//music.163.com/outchain/player?type=2&id=2657613721&auto=1&height=66"></iframe>
+
+
 
 ![Debian button](./doc/Debian-button.gif)
 
