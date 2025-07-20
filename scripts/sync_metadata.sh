@@ -4,7 +4,7 @@
 WORK_DIR=$(pwd)
 JOBS=$(nproc)
 VERBOSE=0
-VERSION="2.3"
+VERSION="2.4"
 
 show_help() {
     cat <<EOF
@@ -47,7 +47,30 @@ check_deps() {
     fi
 }
 
-# 文件名匹配核心逻辑
+# 优化的文件查找和缓存函数
+find_media_files() {
+    find "$WORK_DIR" -type f \( \
+        -iname "*.jpg" -o \
+        -iname "*.jpeg" -o \
+        -iname "*.png" -o \
+        -iname "*.tiff" -o \
+        -iname "*.webp" -o \
+        -iname "*.heic" \
+    \) -print0 | sort -z  # 添加排序以提高后续匹配效率
+}
+
+generate_tasks() {
+    local temp_file
+    temp_file=$(mktemp)
+    
+    find_media_files | while IFS= read -r -d '' input_file; do
+        match_output_files "$input_file" >> "$temp_file"
+    done
+    
+    cat "$temp_file"
+    rm -f "$temp_file"
+}
+
 match_output_files() {
     local input_file="$1"
     local input_name
@@ -62,33 +85,20 @@ match_output_files() {
         -iname "*.tiff" -o \
         -iname "*.webp" -o \
         -iname "*.heic" \
-    \) -print0 | 
-    while IFS= read -r -d '' output_file; do
+    \) -print0 | while IFS= read -r -d '' output_file; do
         [[ "$output_file" == "$input_file" ]] && continue
-        [[ "$(basename "$output_file")" =~ $base_pattern ]] && printf "%s\0" "$output_file"
+        if [[ "$(basename "$output_file")" =~ $base_pattern ]]; then
+            echo "${input_file}:${output_file}"
+        fi
     done
 }
 
-generate_tasks() {
-    find "$WORK_DIR" -type f \( \
-        -iname "*.jpg" -o \
-        -iname "*.jpeg" -o \
-        -iname "*.png" -o \
-        -iname "*.tiff" -o \
-        -iname "*.webp" -o \
-        -iname "*.heic" \
-    \) -print0 |
-    while IFS= read -r -d '' input_file; do
-        while IFS= read -r -d '' output_file; do
-            [[ -n "$output_file" ]] && echo "${input_file}:${output_file}"
-        done < <(match_output_files "$input_file")
-    done
-}
-
+# 优化的任务处理函数
 process_task() {
     local input="$1"
     local output="$2"
     
+    # 添加文件检查
     [[ ! -f "$input" || ! -f "$output" ]] && return 1
     [[ $VERBOSE -eq 1 ]] && echo "处理: $input → $output"
     
@@ -96,17 +106,37 @@ process_task() {
     touch -r "$input" "$output"
 }
 
+# 批处理函数
+process_batch() {
+    local batch="$1"
+    while IFS=: read -r input output; do
+        process_task "$input" "$output"
+    done <<< "$batch"
+}
+
 export -f process_task
+export -f process_batch
+export VERBOSE
 
-# 主流程
-check_deps
-task_list=$(generate_tasks)
+# 优化的主流程
+main() {
+    check_deps
+    
+    # 生成任务列表并计算总数
+    local task_list
+    task_list=$(generate_tasks)
+    local task_count
+    task_count=$(echo "$task_list" | grep -c '[^[:space:]]')
+    
+    [[ $VERBOSE -eq 1 ]] && echo "找到 $task_count 个任务，使用 $JOBS 个线程处理"
+    
+    # 修改并行处理方式
+    echo "$task_list" | parallel --will-cite \
+        -j "$JOBS" \
+        --progress \
+        --bar \
+        --colsep ':' \
+        'process_task {1} {2}'
+}
 
-[[ $VERBOSE -eq 1 ]] && echo "找到 $(echo "$task_list" | grep -c '[^[:space:]]') 个任务，使用 $JOBS 个线程处理"
-
-echo "$task_list" | parallel --colsep ':' \
-    -j "$JOBS" \
-    --eta \
-    --progress \
-    --tagstring "{2}" \
-    'process_task {1} {2}'
+main
