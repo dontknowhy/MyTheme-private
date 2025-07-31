@@ -32,7 +32,7 @@
 | 名称                         | 用处                                                         |         你在何时改选          |
 | ---------------------------- | ------------------------------------------------------------ | :---------------------------: |
 | main                         | 主要的分支,用来存放其他分支包含的所有基础的图片文件          |      想一下获取到所有图       |
-| WinDynamicDesktop (准备废弃) | 用以提供WinDynamic支持,现已经过载且不一定会自动更换          |    PHP变成第一流行的语言时    |
+| WinDynamicDesktop (准备废弃) | 用以提供WinDynamicDesktop支持,该软件现已过载且不一定能做到自动更换 |    PHP变成第一流行的语言时    |
 | selected                     | 从WinDynamicDesktop剥离出来的纯图片,可以克隆到文件夹并由支持文件夹内循环/乱序播放壁纸的壁纸软件(Windows的幻灯片,或者带幻灯片功能的DE) | 不想用WinDynamicDesktop的时候 |
 
 
@@ -128,7 +128,7 @@
 
 ## `gh`工具？
 
-很遗憾的是`gh`工具即使你登陆的时候用ssh密钥了,克隆仓库还是会使用一等一慢的https. 但是好消息是她上传releases的速度很快.
+你自己看.
 
 ## 快速克隆
 
@@ -189,7 +189,7 @@ Git的特性是得你可以本地镜像一个镜像进行运输.除了git bundle
 
 ### 克隆本地仓库
 
-可以通过正常的`git clone`指令完成:
+可以通过正常的`git clone`指令完成(这里假定你的U盘挂载在`/mnt/udisk`,如果通过图形化挂载请前往`/media/$(whoami)`下查找):
 
 ```bash
 git clone /mnt/udisk/MyTheme-private.git # 这里可以指定-b克隆指定的分支,因为你的镜像不出意外是完整的
@@ -219,9 +219,9 @@ git pull
 
 ## 貌似是常见的问题
 
-1. ​	在一些罕见的地方可能遇到git很难克服的问题,例如实在没有办法撑住时不时断开连接的网络.这时候可以去[releases](https://github.com/dontknowhy/MyTheme-private/releases/tag/v2.1)(链接为原版GitHub,自己替换为镜像站)下载大约6.5GB的[7zip](https://7-zip.org)分片压缩包,解压出来后会出现一个叫`main.bundle`的东西,这个叫`git bundle`,可以直接使用`git clone main.bundle theme`来像在线链接一样克隆(不接受`--depth`参数,`-j`参数也是).
+1. 在一些罕见的地方可能遇到git很难克服的问题,例如实在没有办法撑住时不时断开连接的网络.这时候可以去[releases](https://github.com/dontknowhy/MyTheme-private/releases/tag/v2.1)(链接为原版GitHub,自己替换为镜像站)下载大约6.5GB的[7zip](https://7-zip.org)分片压缩包,解压出来后会出现一个叫`main.bundle`的东西,这个叫`git bundle`,可以直接使用`git clone main.bundle theme`来像在线链接一样克隆(不接受`--depth`参数,`-j`参数也是).
 
-   ​	克隆下来后默认的上游为`main.bundle`的绝对路径,需要手动设置上游:`git remote set-url origin git@github.com:dontknowhy/MyTheme-private.git`(ssh坏了的话自行寻找镜像站替换).
+   克隆下来后默认的上游为`main.bundle`的绝对路径,需要手动设置上游:`git remote set-url origin git@github.com:dontknowhy/MyTheme-private.git`(ssh坏了的话自行寻找镜像站替换).
 
    > [!NOTE]
    >
@@ -301,11 +301,13 @@ fast-forward
 
 如果发现最后带有`xxx files changed, 0 insertions(+), 0 deletions(-)`的字样,那你就更新好了.
 
+> 很多人都说pull是一个很坏的选项,但除非你是贡献者,否则你真的没必要逼自己这不好那不好
+
 ## 如何自动更新
 
 > [!TIP]
 >
-> 准确的来说`scalar`帮你省下了接收更新的时间,不会自动更新你的工作目录到最新的commit id.
+> 准确的来说`scalar`帮你省下了接收更新的时间,但不会自动更新你的工作目录到最新的commit id.
 >
 > 所以此工具对于这个仓库来说仅用于接收更新,图片的检出还需要手动操作.
 
@@ -351,12 +353,12 @@ scalar register #麻烦确保自己在仓库目录内
 scalar list
 ```
 
-如果输出东西了就是可以.
+如果输出你的仓库文件路径就是可以.
 
 最后可以尝试手动运行维护仓库进程:
 
 ```bash
-scalar run all #后期发现你上边啥也不做这个步骤也会帮你完成
+scalar run all #默认的自动化进程实际上不执行gc,原因懂得都懂
 ```
 
 会产生类似于下面的输出:
@@ -408,9 +410,9 @@ scalar run all
 
 ## 维护小贴士
 
-1. 准备编译jpegoptim时记得链接mozjpeg,如果事后强行加载会无法启动
-2. 使用jpegoptim的`-m`参数去压缩图片而不是图片编辑(在我这是GIMP)内置的压缩,很显然的是jpegoptim的压缩效果会因为调用了mozjpeg而小一点或很多(具体的:`--strip-none -f -w 20 --all-progressive -m 85`,`-w`部分可以指定别的,我喜欢是20)
-3. 不清楚有没有效果,我使用的[upscayl-bin](https://github.com/upscayl/upscayl-ncnn)主体是自己替换掉更新的libwebp和ncnn还有`stb_image.h`等依赖的,因为上一次更新依赖是2年前,在这之后的ncnn版本都可以直接灌进去编译,所以为何不嘛
+1. ~~准备编译jpegoptim时记得链接mozjpeg,如果事后强行加载会无法启动~~ 实际上jpegoptim自己就有链接mozjpeg的选项
+2. 使用jpegoptim的`-m`参数去压缩图片而不是图片编辑(在我这是GIMP)内置的压缩,很显然的是jpegoptim的压缩效果会因为调用了mozjpeg而小一点或很多(具体的:`--strip-none -f -w 20 --all-progressive -m 95`,`-w`部分为每次同时进行的任务数,可以指定别的,我喜欢是20)
+3. 不清楚有没有效果,我使用的[upscayl-bin](https://github.com/upscayl/upscayl-ncnn)主体是自己替换掉更新的libwebp和ncnn还有`stb_image.h`等依赖的,因为上一次更新依赖是2年前,在这之后的ncnn版本~~都可以直接~~灌进去编译,所以为何不嘛
 4. 如果自己编译的组件,建议使用`-march=native`之类的优化flag给编译器,对于我的Clang 19来说是:`-Ofast -pipe -march=native -Wno-unused-command-line-argument -mllvm -polly -mllvm -polly-vectorizer=stripmine -flto=thin -mllvm -polly-parallel -mllvm -polly-omp-backend=LLVM -fuse-ld=/usr/bin/ld.lld-19 -mllvm -polly-run-inliner -mllvm -polly-run-dce -fno-semantic-interposition -fvisibility=hidden -mllvm -polly-invariant-load-hoisting -fopenmp=libomp`,什么是更多的,可以给NCNN传递额外的编译选项来稍微给小亮整个活:`-DNCNN_ENABLE_LTO=ON -DNCNN_SIMPLEVK=OFF`
 5. 如果很在乎的话,我用的升采样模型是`4xNomos8kSC`
 6. 编译flag都是自己随便瞎写的憋骂了,WinDynamicDesktop分支的Python脚本很烂是真的
@@ -418,6 +420,15 @@ scalar run all
 8. 添加了实验性的[sync_metadata.sh](./scripts/sync_metadata.sh),用于拷贝原图片的元数据,如果真的有摄影师看到这的话麻烦在IPTC里边写自己的大名.如果被压缩到1080p的情况下无解.
 9. <img src="./doc/gimp-cfg.jpg" width = "300" alt="GIMP config screenshot" align=center />
 10. 上面的GIMP截图应该加上保存IPTC
+11. 最近开始选用[JPEGDestroyer](https://openmodeldb.info/models/1x-JPEGDestroyer)模型来减少1080p下jpeg压缩的副作用对放大模型的影响,目前貌似效果良好.
+
+    `4xNomos8kSC`模型本身具有一定的抗jpeg压缩能力,但是不多,故外挂一次jpeg降噪模型.
+
+    <!--真的是jpeg降噪而不是其他什么说法吗-->
+
+12. 一些(按纵向算的)3k的图片我依旧使用了AI放大并降回(按纵向算的)4k,可能涂抹感较为强烈.抱歉.
+
+13. 实测在一些毛发不明显的图片AI仍旧倾向于抹就完了(eg.[1868.jpg](./横/1868.jpg)和[1880.jpg](./横/1880.jpg))
 
 
 
