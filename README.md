@@ -411,24 +411,54 @@ scalar run all
 ## 维护小贴士
 
 1. ~~准备编译jpegoptim时记得链接mozjpeg,如果事后强行加载会无法启动~~ 实际上jpegoptim自己就有链接mozjpeg的选项
-2. 使用jpegoptim的`-m`参数去压缩图片而不是图片编辑(在我这是GIMP)内置的压缩,很显然的是jpegoptim的压缩效果会因为调用了mozjpeg而小一点或很多(具体的:`--strip-none -f -w 20 --all-progressive -m 95`,`-w`部分为每次同时进行的任务数,可以指定别的,我喜欢是20)
-3. 不清楚有没有效果,我使用的[upscayl-bin](https://github.com/upscayl/upscayl-ncnn)主体是自己替换掉更新的libwebp和ncnn还有`stb_image.h`等依赖的,因为上一次更新依赖是2年前,在这之后的ncnn版本~~都可以直接~~灌进去编译,所以为何不嘛
+
+2. ~~使用jpegoptim的`-m`参数去压缩图片而不是图片编辑(在我这是GIMP)内置的压缩,很显然的是jpegoptim的压缩效果会因为调用了mozjpeg而小一点或很多(具体的:`--strip-none -f -w 20 --all-progressive -m 95`,`-w`部分为每次同时进行的任务数,可以指定别的,我喜欢是20)~~
+
+3. 不清楚有没有效果,我使用的[upscayl-bin](https://github.com/upscayl/upscayl-ncnn)主体是自己替换掉更新的libwebp和ncnn还有`stb_image.h`等依赖的,因为上一次更新依赖是2年前,在这之后的ncnn版本~~都可以直接~~不可以直接灌进去编译~~但是现在不行了~~,所以为何不嘛
+
 4. 如果自己编译的组件,建议使用`-march=native`之类的优化flag给编译器,对于我的Clang 19来说是:`-Ofast -pipe -march=native -Wno-unused-command-line-argument -mllvm -polly -mllvm -polly-vectorizer=stripmine -flto=thin -mllvm -polly-parallel -mllvm -polly-omp-backend=LLVM -fuse-ld=/usr/bin/ld.lld-19 -mllvm -polly-run-inliner -mllvm -polly-run-dce -fno-semantic-interposition -fvisibility=hidden -mllvm -polly-invariant-load-hoisting -fopenmp=libomp`,什么是更多的,可以给NCNN传递额外的编译选项来稍微给小亮整个活:`-DNCNN_ENABLE_LTO=ON -DNCNN_SIMPLEVK=OFF`
+
 5. 如果很在乎的话,我用的升采样模型是`4xNomos8kSC`
+
+   > 该模型对于背景虚化的处理效果不好,毛发还行,如果模型认不出来是毛发的话效果就爆了
+
 6. 编译flag都是自己随便瞎写的憋骂了,WinDynamicDesktop分支的Python脚本很烂是真的
-7. [upscayl-bin](https://github.com/upscayl/upscayl-ncnn)放大出来的图会出现有透明边的情况(具体为竖屏图片的下边,横屏图片的右边,有4像素的偏移,不能稳定触发但是概率很高),后期自行裁切.
+
+7. ~~[upscayl-bin](https://github.com/upscayl/upscayl-ncnn)放大出来的图会出现有透明边的情况(具体为竖屏图片的下边,横屏图片的右边,有4~6像素的偏移,不能稳定触发但是概率很高),后期自行裁切.~~貌似是原本下载下来的图就有这种问题
+
 8. 添加了实验性的[sync_metadata.sh](./scripts/sync_metadata.sh),用于拷贝原图片的元数据,如果真的有摄影师看到这的话麻烦在IPTC里边写自己的大名.如果被压缩到1080p的情况下无解.
-9. <img src="./doc/gimp-cfg.jpg" width = "300" alt="GIMP config screenshot" align=center />
-10. 上面的GIMP截图应该加上保存IPTC
-11. 最近开始选用[JPEGDestroyer](https://openmodeldb.info/models/1x-JPEGDestroyer)模型来减少1080p下jpeg压缩的副作用对放大模型的影响,目前貌似效果良好.
+
+9. 对GIMP默认行为做了点小变动,包括:
+
+   >1. 使用下面的脚本强行加了个~~我不知道有没有用~~的OpenMP支持:
+   >
+   >```bash
+   >#!/usr/bin/env bash
+   >export OMP_NUM_THREADS=20
+   >export OPENBLAS_NUM_THREADS=20
+   >export OMP_THREAD_LIMIT=30
+   >export LD_PRELOAD="libiomp5.so"
+   >export KMP_AFFINITY=granularity=fine,compact,1,0
+   >export KMP_BLOCKTIME=0
+   >export MALLOC_CONF=oversize_threshold:1,background_thread:true,metadata_thp:auto,dirty_decay_ms:9000000000,muzzy_decay_ms:9000000000
+   >export LD_LIBRARY_PATH=/usr/local/lib
+   >/usr/bin/gimp
+   >
+   >```
+   >
+   >2. 自行编译了一份[mozjpeg](https://github.com/mozilla/mozjpeg)放到了`/usr/local/lib`内供GIMP加载
+   >3. <img src="./doc/gimp-cfg.jpg" width = "300" alt="GIMP config screenshot" align=center />
+   >4. 缩放图像时选用了`LoHalo(低光晕)`模式,据说能保留更多细节
+
+10. 最近开始选用[JPEGDestroyer](https://openmodeldb.info/models/1x-JPEGDestroyer)模型来减少1080p下jpeg压缩的副作用对放大模型的影响,目前貌似效果良好.
 
     `4xNomos8kSC`模型本身具有一定的抗jpeg压缩能力,但是不多,故外挂一次jpeg降噪模型.
 
     <!--真的是jpeg降噪而不是其他什么说法吗-->
 
-12. 一些(按纵向算的)3k的图片我依旧使用了AI放大并降回(按纵向算的)4k,可能涂抹感较为强烈.抱歉.
+11. 一些(按纵向算的)3k的图片我依旧使用了AI放大并降回(按纵向算的)4k,可能涂抹感较为强烈.抱歉.
 
-13. 实测在一些毛发不明显的图片AI仍旧倾向于抹就完了(eg.[1868.jpg](./横/1868.jpg)和[1880.jpg](./横/1880.jpg))
+12. 实测在一些毛发不明显的图片AI仍旧倾向于抹就完了(eg.[1868.jpg](./横/1868.jpg)和[1880.jpg](./横/1880.jpg))
 
 
 
