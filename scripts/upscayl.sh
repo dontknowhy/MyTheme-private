@@ -142,7 +142,8 @@ run_upscayl() {
     local input_dir="$1"
     local output_dir="$2"
     local model_name="$3"
-    local start_time=$(date +%s)
+    local start_time
+    start_time=$(date +%s)
     
     echo "开始放大操作..."
     echo "输入目录: $input_dir"
