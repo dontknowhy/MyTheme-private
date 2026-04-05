@@ -1,0 +1,4 @@
+rich
+pillow
+piexif
+psutil
