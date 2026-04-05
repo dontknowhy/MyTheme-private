@@ -25,7 +25,7 @@ import psutil
 from dataclasses import dataclass
 from decimal import Decimal
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Any
 
 try:
     from rich.live import Live
@@ -36,18 +36,30 @@ try:
     from rich import box
     RICH_AVAILABLE = True
 except Exception:
+    # 回退定义，保证名称已绑定以通过静态分析
     RICH_AVAILABLE = False
+    Live = None
+    Panel = None
+    Progress = None
+    BarColumn = None
+    TextColumn = None
+    TimeElapsedColumn = None
+    Group = None
+    # 简单 Text 回退：接收字符串并返回其 str()
+    Text = lambda s: str(s)
+    box = None
 try:
     from PIL import Image
     PIL_AVAILABLE = True
 except Exception:
+    Image = None
     PIL_AVAILABLE = False
 
 # rich 进度相关全局
-RICH_PROGRESS = None
-RICH_SCRIPT_TASK = None
-RICH_STAGE_TASK = None
-RICH_LIVE = None
+RICH_PROGRESS: Any = None
+RICH_SCRIPT_TASK: Any = None
+RICH_STAGE_TASK: Any = None
+RICH_LIVE: Any = None
 CURRENT_DIR_STR = "-"
 CURRENT_MODEL_STR = "-"
 
@@ -88,15 +100,22 @@ def check_and_create_dir(p: Path):
 
 def is_supported_image(p: Path) -> bool:
     # 优先使用扩展名快速判断，再在可能时用 PIL 打开验证
-    if p.suffix.lower() not in {'.jpg', '.jpeg', '.png', '.webp', '.bmp', '.tif', '.tiff'}:
+    if p.suffix.lower() not in {'.jpg', '.jpeg', '.png', '.webp'}:
         return False
     if PIL_AVAILABLE:
         try:
+            # 类型检查：确保 Image 在此处不是 None
+            assert Image is not None
             with Image.open(p) as im:
                 im.verify()
             return True
         except Exception:
-            return False
+            # 对于非常大的图片或 PIL 校验失败的情况，不要直接跳过，记录警告并回退到仅按扩展名判断
+            try:
+                WARNINGS.append(f"图片校验失败，按扩展名继续处理: {p}")
+            except Exception:
+                pass
+            return True
     return True
 
 
@@ -128,11 +147,19 @@ def discover_batches(download_dir: Path) -> List[Path]:
     return sorted(batches, key=keyfn)
 
 
-def build_panel() -> Panel:
+def build_panel() -> Any:
     # 构建动态面板，显示当前模型与剩余图片（不显示完整路径）
     info_lines = [Text(f"当前模型: {CURRENT_MODEL_STR}"), Text(f"剩余图片: {max(0, TOTAL_WORK - PROCESSED_WORK)}")]
-    group = Group(*info_lines, RICH_PROGRESS)
-    return Panel(group, box=box.ROUNDED, title="Upscayl 进度")
+    # 仅在 rich 可用且对象存在时才把 Progress 放入 Group
+    renderables = list(info_lines)
+    if RICH_PROGRESS is not None:
+        renderables.append(RICH_PROGRESS)
+    # 如果 rich 可用且 Panel/Group 存在，返回 Panel，否则返回简单字符串（用于回退）
+    if Group is not None and Panel is not None and box is not None:
+        group = Group(*renderables)
+        return Panel(group, box=box.ROUNDED, title="Upscayl 进度")
+    # 回退：返回简单文本，可被 Live.update 接受为可渲染对象
+    return "\n".join(str(t) for t in info_lines)
 
 
 async def run_upscayl_async(input_dir: Path, output_dir: Path, model_name: str, stage: int = 1, dry_run: bool = False, stats: Optional[RunStats] = None) -> int:
@@ -323,12 +350,13 @@ def main():
     second_model_clean = clean_model_name(SECOND_MODEL)
     # 初始化 rich 进度（如可用）并启动 Live 面板
     global RICH_PROGRESS, RICH_SCRIPT_TASK, RICH_STAGE_TASK, RICH_LIVE
-    if RICH_AVAILABLE:
+    if RICH_AVAILABLE and Progress is not None and TextColumn is not None and BarColumn is not None and TimeElapsedColumn is not None and Live is not None and Group is not None and Panel is not None:
         try:
             RICH_PROGRESS = Progress(TextColumn("{task.description}"), BarColumn(bar_width=None), TextColumn("{task.percentage:>3.0f}%"), TimeElapsedColumn(), expand=True)
             # 先添加阶段任务，再添加总体任务（使阶段显示在上方）
             RICH_STAGE_TASK = RICH_PROGRESS.add_task("当前进度", total=100)
             RICH_SCRIPT_TASK = RICH_PROGRESS.add_task("整体进度", total=TOTAL_WORK if TOTAL_WORK > 0 else None)
+            # Live 已经存在且不是 None
             RICH_LIVE = Live(build_panel(), refresh_per_second=4)
             RICH_LIVE.start()
         except Exception:
