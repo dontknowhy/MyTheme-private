@@ -1,11 +1,5 @@
  # 我是文档
-
-| Clones in last 14 days | Unique cloners in last 14 days |
-| ---------------------- | ------------------------------ |
-| 21 Clones              | 19 Unique cloners              |
-
-到底是谁在clone这个若智仓库（）
-
+![Stone Badge](https://stone.professorlee.work/api/stone/dontknowhy/MyTheme-private)
 如何克隆和维护这个~~智障~~仓库：
 
 > [!WARNING]
