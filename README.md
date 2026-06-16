@@ -1,184 +1,31 @@
- # 我是文档
+ # 胡闹厨房3.0
+
+本项目会不定时大规模重写历史，如果重写了请自行reset
+
 ![Stone Badge](https://stone.professorlee.work/api/stone/dontknowhy/MyTheme-private)
-如何克隆和维护这个~~智障~~仓库：
 
 > [!WARNING]
 >
-> 对于这种奇奇怪怪的Git用途来说一块还算比较健康的硬盘是刚需(尤其是没有办法开[Git LFS](https://docs.github.com/zh/repositories/working-with-files/managing-large-files/about-git-large-file-storage))。 Git一般没有特别的需求，但是读写能在USB3。0标准速率且能稳定住的速度为佳。 如果不同这个指标的话你可以问问你自己一个问题: 我的设备开机很慢吗。 如果你的回答是`是`的话，那你依然可以正常游玩，但是在执行写盘操作会很痛苦，因为Git会浏览大量的文件来决定自己要操作哪些地方。
-
-## 这个仓库功能着
-
-1. ~~惊人的半角全角区别。~~~~给我全局替换好了。~~实际上中文用全角标点符号是有原因的！不要学！
-2. 不太准确但是It Just Works的信息。
-3. 很容易被DMCA的图片。
-4. 大哥我错了真的不想拿来大规模传播的。
-5. 可能缺失的句号
-6. 并没有的[官方正版下载链接](https://www.bilibili.com)。
-7. 并不想使用Noto Sans CJK的Typora写成的文档。
-8.  ~~乱写的commit message。~~ 统一改成一个词了。
-9. 压根不合适的源码管理。
-10. 看起来很明显是拿AI放大出来的图片(然而是的)
-
->大量使用AI放大模型意味着很多都带有AI味，但是理由是很多收集来的毛五都是在1080p左右，只有兼任摄影师的才会注意上传原图或者最起码原图缩小两倍分辨率的图。这就意味着我想看见分辨率齐刷刷统一的图集就要AI放大。
->
->维护期间我也更换了一次AI放大模型(从[RemaCRI](https://huggingface.co/FacehugmanIII/4x_foolhardy_Remacri/tree/main)到[Nomos8KSC](https://github.com/Phhofm/models/raw/main/4xNomos8kSC/))，所以放大效果不一样，前者偏向锐化且不适合多毛的场景，后者偏向毛发但是对背景的处理不够好。
->
->我也使用[LaMa](https://github。com/advimman/lama)来去除水印，主要因为不喜欢桌面有除了激活Windows之外的水印，后者可以自己关掉，前者就需要做点工作了，抱歉。
-
-11. 就我自己维护，重复内容在所难免
+> 对于这种奇奇怪怪的Git用途来说一块还算比较健康的硬盘是刚需(尤其是没有办法开[Git LFS](https://docs.github.com/zh/repositories/working-with-files/managing-large-files/about-git-large-file-storage))。 Git一般没有特别的需求，但是读写能在USB3.0标准速率且能稳定住的速度为佳。 
 
 [![I - USE](https://img.shields.io/badge/I-USE-d70751?style=for-the-badge)](https://debian。org) [![Debian - BTW](https://img.shields.io/badge/Debian-BTW-d70751?style=for-the-badge&logo=Debian&logoColor=d70751)](https://debian。org)
 
-## 分支小注记
+## 分支列表
 
-| 名称                       | 用处                                                         |      你在何时该选       |
-| -------------------------- | ------------------------------------------------------------ | :---------------------: |
-| main                       | 主要的分支，用来存放其他分支包含的所有基础的图片文件         |   想一下获取到所有图    |
-| WinDynamicDesktop (已废弃) | 用以提供WinDynamicDesktop支持，该软件现已过载且不一定能做到自动更换 | PHP变成第一流行的语言时 |
-| selected                   | 从WinDynamicDesktop剥离出来的纯图片，可以克隆到文件夹并由支持文件夹内循环/乱序播放壁纸的壁纸软件(Windows的幻灯片，或者带幻灯片功能的DE) |         母鸡啊          |
+| 名称     | 用处                                                 |    你在何时该选    |
+| -------- | ---------------------------------------------------- | :----------------: |
+| main     | 主要的分支，用来存放其他分支包含的所有基础的图片文件 | 想一下获取到所有图 |
+| selected | 根据一定标准在[横屏壁纸](./横)中筛选出来的文件       |       母鸡啊       |
 
+------
 
+## 克隆方法
 
-## SSH克隆
-
-> 你最开始需要做的是自己注册个GitHub账户，如果遇到什么访问不了的问题自行解决，都来这看了不有个号怎么行呢。 
-
-检查自己有ssh密钥没。 一般来说都可以在[这里](https://docs.github.com/zh/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account)查看文档来自行添加一个（ssh密钥是通用的，但通常推荐每个获得Github访问权限的设备都有单独的密钥，万一真的出事了可以方便注销密钥）
-
-> [!CAUTION]
->
-> 由于涉及到直接与长城之外的GitHub服务器连接，所以国际流量大的时候最好不要尝试去连接。
->
-> 具体时间看各大高校的镜像站同步内容的时间/其他国家上网的时间，大部分都在每日的大半夜。
-
-> [!WARNING]
->
-> GitHub对于ssh密钥的访问貌似很宽松，不要泄漏你的密钥，否则删库从梦想走进现实。 
-
-1. 创建一个密钥：
-
-   ````bash
-   ssh-keygen -t rsa
-   ````
-
-   之后会询问你存储的位置
-
-   ```
-   Enter file in which to save the key (/home/dontknowhy/.ssh/id_rsa):
-   ```
-
-   这时候最好直接回车，因为这块小破地方ssh尝试连接时会寻找这里的密钥 (家目录的`。ssh`文件夹) 进行验证（记得第二行拷贝括号的内容，后面有用）
-
-   之后按照提示输入一个密码(最好是强密码)，你就有个密钥了
-
-   ```
-   Generating public/private rsa key pair.
-   Enter file in which to save the key (/home/dontknowhy/.ssh/id_rsa): 
-   Enter passphrase (empty for no passphrase): 
-   Enter same passphrase again: 
-   Your identification has been saved in id_rsa
-   Your public key has been saved in id_rsa.pub
-   The key fingerprint is:
-   SHA256:4GhApi6ovNnEztkLj5f4JA7wFVLmU2lI9c8I5vNnTiM dontknowhy@sb-debian
-   The key's randomart image is:
-   +---[RSA 3072]----+
-   |  o.+oo.         |
-   | + +..o.         |
-   |. o +.+ .        |
-   |o  o B o +       |
-   |+.  + + S o      |
-   |=..o   o         |
-   |.o.=... E =      |
-   |  X.Oo   * .     |
-   | o Bo=.   .      |
-   +----[SHA256]-----+
-   ```
-
-2. 拷贝公钥
-
-   把上面说复制的内容准备好
-
-   ````
-   $ cat *你刚才复制的内容，后面加上.pub*
-   ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCLuwIjqqm7Qy1PaxzvLEVjRVFtPIWj1KaHUIGqDM853KATRsbdvQG5nibKfjrj/g9VsVG4Mq/lQ26JCxLi5ZVI7YAUHq9hMLwnyFx99pVlXzt4GagifmVWX86kbPzFXi8BfvaYFYZR1Wlb3+BC0wOWIK0ZbMvCl1m+Q8IND8jOJYOp2GmvcXqB2DZIIF0OhQWyzMcfy7jR1db4yl5i0fHc8EKHZO20xaZXAvHlCt0008TmF6+xTlkyLylEZzObq1Fo7jNJkgYd1+fEVi1Qs93gyfj3QQQzyToSg8Fl2qj6bfalv0WmUwdrqBfADHWE/6tPcnTmc4cQmHH1pszVBKmP23pXJOxfmx0JhBZEaNep6tG6gioVQPrW2/FO86jb47MoJfq7z9T5okylHM3F+EcEqOEEYL2dWi+vV15eOcoS3/R+lZw+hHGYPlXCBRft+DKqveVIECBD5+kaBi+DwdlICGjJhhU2xskF7ThPdW3wObJqD6Xe/D6qWbPf0waVZss= dontknowhy@sb-debian
-   ````
-
-   把上面输出的内容给复制好。 
-
-3. 喂给[~~GutHib~~](https://guthib.com)你新鲜的公钥
-
-   进入GitHub官网，点右上角你的~~随机生成~~的头像，点`Settings`，再点`SSH and GPG keys`，接着是`New SSH key` ，在`Title`输入备注(例如用于哪个设备的)，在`Key`栏目输入你刚才复制的内容，最后点`Add SSH key`完成添加。 
-
-4. 看看~~GayHub~~认识不认识你的密钥
-
-   在终端输入`ssh git@github.com`，如果你的密钥设置了密码此时会询问密码，完成后你应该看得见：
-
-   ```
-   Hi dontknowhy! You've successfully authenticated, but GitHub does not provide shell access.
-   Connection to github.com closed。
-   ```
-
-   如果~~GitCode~~对你问好那你就可以用这个密钥愉快进行操作了。 
-
-5. 透过ssh克隆这个仓库
-
-   `git clone --depth=1 -j 16 git@github.com:dontknowhy/MyTheme-private。git`
-
-   注释: 
-
-   1. `--depth=1`只仅克隆一层仓库，人话就是哥们不用下载我黑历史，另外也有助于你节省磁盘空间
-   
-   2. `-j 16`可以加速下载，如果失败请改成`-j 8`。在广东特供中国移动可以跑到5M/s，但其他网络一般都有效。且流量全程被你的密钥加密。
-
-## `gh`工具？
-
-你自己看。
-
-## 快速克隆
-
- <a href='https://gitclone.com'><img src='https://gitclone.com/img/title.ico' style='width:300px;'/></a>
-
-↑你可以尝试用GitClone网站来克隆
-
-`git clone --depth=1 -j 16 https://gitlone.com/github.com/dontknowhy/MyTheme-private.git`
-
-> [!NOTE]
->
-> （当然我没有成功过，放这玩的）
-
-你也可以试试[KGitHub](https://help.kkgithub.com/donate/)(点进去是赞助人家的链接，爆点米给人家罢)
-
-> **KGitHub目前的限制：**
->
-> 1。不能注册
->
-> 2。不能上传文件，可以登录，可以在线编辑
->
-> 3。来自raw.githubusercontent.com的下载可使用raw.kkgithub.com替代
->
-> 4。仓库拦截采用黑名单关键字拦截
-
-`git clone --depth=1 -j 16 https://kkgithub.com/dontknowhy/MyTheme-private.git`
-
-或者去寻找一些proxy方案，例如[GitHub Proxy](https://ghproxy.it)
-
-`git clone --depth=1 -j 16 https://ghproxy.it/https://github.com/dontknowhy/MyTheme-private.git`
-
-## `github.com`永不为奴！
-
-感觉不如[____](https://ys-api。mihoyo。com/event/download_porter/link/ys_cn/official/android_default)。
-
-如果你为自己创造了良好的网络环境(大嘘)的话可以用。
-
-<!--讨厌全角和半角符号区别-->
-
-## 本地仓库
-
-Git的特性是得你可以本地镜像一个镜像进行运输。除了git bundle以外你还可以直接在本地创建整个的仓库副本(不包括能直接看得见的图片部分，只有`.git`的内容)
+目前GitHub的网页浏览和下载已经因为这个仓库严重超载，请**不要**尝试直接下载或从其他镜像站下载，以免对镜像站站长身心造成损失。但是你可以干的是自己本地存一份镜像仓库，以下是简略版的操作方法
 
 ### 创建镜像
 
-1. 准备一个至少16G的外置存储设备，最好USB版本在3.0以上保证正常的速度，如果不是的话也可以，就是看你个人忍受程度。
+1. 准备一个至少32G的较为快速的外置存储设备
 
 2. 运行 (在你的外置存储设备上)
 
@@ -186,10 +33,10 @@ Git的特性是得你可以本地镜像一个镜像进行运输。除了git bund
    git clone --mirror -j 16 https://github.com/dontknowhy/MyTheme-private.git # 这里的-j参数可以自行修改
    ```
 
-   之后你可以注意到提示的是`克隆到纯仓库 'MyTheme-private。git'...`，这意味着你不能直接看见图片，而是标准`.git`文件夹中的文件。
+   之后你可以注意到提示的是`克隆到纯仓库 'MyTheme-private.git'...`，这意味着你不能直接看见图片，而是标准`.git`文件夹中的文件。
 
 3. 之后等待下载完成
-4. 你就有个本地仓库了，可以执行本文档中的神金优化指令来减少一点占用。
+4. 你就有个本地仓库了
 
 ### 克隆本地仓库
 
@@ -211,53 +58,29 @@ git remote set-url origin https://github.com/dontknowhy/MyTheme-private.git
 git pull
 ```
 
-### 外置存储设备缓慢解决方案
+------
 
-#### 在创建时:
+以下是一些瞎写的配置，兴许有用：
 
-可以先将仓库镜像到本地磁盘上再拷贝过去
-
-#### 在克隆时:
-
-可以把整个仓库现行拷贝到目标机器上的本地磁盘再进行克隆操作
-
-## 貌似是常见的问题
-
-1. ~~在一些罕见的地方可能遇到git很难克服的问题，例如实在没有办法撑住时不时断开连接的网络。这时候可以去[releases](https://github.com/dontknowhy/MyTheme-private/releases)(链接为原版GitHub，自己替换为镜像站)下载大约6。5GB的[7zip](https://7-zip。org)分片压缩包，解压出来后会出现一个叫`main。bundle`的东西，这个叫`git bundle`，可以直接使用`git clone main。bundle theme`来像在线链接一样克隆(不接受`--depth`参数，`-j`参数也是)。~~
-
-   ~~克隆下来后默认的上游为`main。bundle`的绝对路径，需要手动设置上游:`git remote set-url origin git@github.com:dontknowhy/MyTheme-private.git`(ssh坏了的话自行寻找镜像站替换)。~~早就过时了
-
-   > [!NOTE]
-   >
-   > `git bundle`克隆出来的仓库可能有12G以上的大小，请应用下面的配置并gc一下。
-
-   > [!NOTE]
-   >
-   > 你现在下载的bundle肯定已经落后与本仓库了，请看看[下面](https://github。com/dontknowhy/MyTheme-private#如何接收更新)的介绍来更新。
-
-2. `.git`文件夹过大是因为git压根不适合处理图片文件，我保存的全是已经过jpeg压缩的图片。
-
-3. 有时候网络环境比较“自由&香甜的空气”但是还是断了。这时候可能需要整点git配置文件:
-
-   ```bash
-   # 这里边还是有些多余的我闲着没事干加上去的配置
-   git config checkout.workers 20
-   git config core.compression 9
-   git config pack.comppression 9
-   git config pack.threads 20
-   git config index.threads 20
-   git config repack.cruftThreads 20
-   git config http.minSessions 5
-   git config http.maxRequests 5
-   git config http.postBuffer 5M
-   git config http.lowSpeedLimit 0
-   git config http.lowSpeedTime 999999
-   git config core.fscache true
-   git config core.preloadindex true
-   git config gc.auto 256
-   git config core.multiPackIndex true
-   git config pack.useSparse true
-   ```
+```bash
+# 这里边还是有些多余的我闲着没事干加上去的配置
+git config checkout.workers 20
+git config core.compression 9
+git config pack.comppression 9
+git config pack.threads 20
+git config index.threads 20
+git config repack.cruftThreads 20
+git config http.minSessions 5
+git config http.maxRequests 5
+git config http.postBuffer 5M
+git config http.lowSpeedLimit 0
+git config http.lowSpeedTime 999999
+git config core.fscache true
+git config core.preloadindex true
+git config gc.auto 256
+git config core.multiPackIndex true
+git config pack.useSparse true
+```
 
 > [!WARNING]
 >
@@ -267,166 +90,13 @@ git pull
 > git gc --prune=now
 > ```
 >
-> 这样你就会惊喜的发现`。git`文件夹比图片还大，没办法，git天生不适合存储大量图片。
-
-
-
-## 如何接收更新
-
-一般来说你使用上述方法都可以设置好上游，但是你克隆好后可能还是需要检查一下:`git remote -v`，一般会输出以下东西:
-
-```bash
-origin  git@github.com:dontknowhy/MyTheme-private。git (fetch)
-origin  git@github.com:dontknowhy/MyTheme-private。git (push)
-```
-
-如果origin行是一串网址或者以`git@github.com`开头的地址那你一般可以用
-
-```bash
-git fetch -j8 && git pull
-```
-
-或者更加简单的
-
-```bash
-git pull -j8
-```
-
-最后你应该都可以得到类似于以下的输出:
-
-```bash
-updating 4990df4..521802e
-updating files: 100% (85/85), done。
-fast-forward
-"\346\250\252/723.jpg"  | bin 3098000 -> 3032067 bytes
-##有可能很长
-85 files changed, 0 insertions(+), 0 deletions(-)
-```
-
-如果发现最后带有`xxx files changed, 0 insertions(+), 0 deletions(-)`的字样，那你就更新好了。
-
-> 很多人都说pull是一个很坏的选项，但除非你是贡献者，否则你真的没必要逼自己这不好那不好
-
-## 如何自动更新（不更新文件）
-
-> [!TIP]
->
-> 准确的来说`scalar`帮你省下了接收更新的时间，但不会自动更新你的工作目录到最新的commit id。
->
-> 所以此工具对于这个仓库来说仅用于接收更新，图片的检出还需要手动操作。
-
-你可以依赖一些例如`crontab`的玩意来创建自动任务来更新，但是很明显这玩意不认识的一定不会写，认识了也会写。所以我们可以用[巨硬](https://zhidao.baidu.com/question/1650077279199221540.html)制作的[Scalar](https://github.com/microsoft/git)工具来帮我们创建看不懂的自动任务。
-
-> [!NOTE]
->
-> `Scalar`貌似在git的2.38版进入主线，所以确保你的git版本为最新版来防止找不到此工具。
->
-> `Scalar`貌似在Windows 7上无法创建自动任务。(这么老了不如早日放弃)
-
-#### */Linux
-
-如果你的`git`版本符合要求，那么你可以尝试运行`scalar`来验证你的发行版有没有加入此工具，如果有输出的内容那就是有。
-
-如果有输出的话可以运行:
-
-```bash
-scalar reconfigure
-```
-
-来注册`scalar`的自动任务。
-
-> [!NOTE]
->
-> 貌似`scalar`的注册并不会告诉你什么，所以你需要靠返回的状态值是否为0来判断注册成功，或者可以去看`.gitconfig`文件，具体这样操作:
->
-> ```bash
-> cat ~/.gitconfig|grep scalar
-> ```
->
-> 如果输出了带scalar字眼的内容那就是注册好了。
-
-注册好后需要再注册你克隆的仓库:
-
-```bash
-scalar register #麻烦确保自己在仓库目录内
-```
-
-可以通过以下指令来验证:
-
-```bash
-scalar list
-```
-
-如果输出你的仓库文件路径就是可以。
-
-最后可以尝试手动运行维护仓库进程:
-
-```bash
-scalar run all #默认的自动化进程实际上不执行gc，原因懂得都懂
-```
-
-会产生类似于下面的输出:
-
-```bash
-/home/dontknowhy/图片/MyTheme-private
-枚举对象中: 61, 完成.
-对象计数中: 100% (61/61), 完成.
-使用 16 个线程进行压缩压缩对象中: 100% (61/61), 完成.
-47d6e6467f35194610c51c91aa638d267d6d5201
-写入对象中: 100% (61/61), 完成.
-总共 61（差异 0），复用 0（差异 0），包复用 0（来自  0 个包）枚举对象中: 160， 完成。
-```
-
-最后`Scalar`会以每小时，每天，每周的频率维护仓库。
-
-#### Windows
-
-类似，但确保Windows版本在10或以上。
-
-其余的使用
-
-```bash
-scalar run all
-```
-
-就会自动配置好
-
-## 自动更换壁纸
-
-> [!WARNING]
->
-> 只有Windows才有[WinDynamicDesktop](https://github.com/t1m0thyj/WinDynamicDesktop/)，其余平台[自己找](https://github.com/zzag/plasma5-wallpapers-dynamic)
-
-> [!IMPORTANT]
->
-> Windows内置的幻灯片足够了，但是如果你想类似于保活一样的换壁纸还是这个好玩。
->
-> WinDynamicDesktop已废弃
-
-1. 从[人家仓库的releases](https://github.com/t1m0thyj/WinDynamicDesktop/releases/latest)下载自己架构的安装包(不推荐下载带Portable标签的包)(你的电脑架构自行查询)。
-2. 安装(麻烦默认配置不要动，顶多给我改桌面图标)
-3. 下载**这个仓库的**releases中的ddw文件或选择使用仓库中的WinDynamicDesktop分支(里边我随便挑了点用，WinDynamicDesktop很好改主题的，全是json)
-4. 双击打开ddw，如果是git分支的话自行研究克隆到Appdata\Local\WinDynamicDesktop\themes内
-5. 完事了
-6. 你会发现几乎1分钟换一张
-
-
+> 这样你就会惊喜的发现`.git`文件夹比图片还大，没办法，git天生不适合存储大量图片。
 
 ## 维护小贴士
 
-1. ~~准备编译jpegoptim时记得链接mozjpeg，如果事后强行加载会无法启动~~ 实际上jpegoptim自己就有链接mozjpeg的选项
+1. 目前开始使用[chaiNNer](https://github.com/chaiNNer-org/chaiNNer)进行统一的AI放大操作，详细流程请参考[该文件](./scripts/process.chn)
 
-2. ~~使用jpegoptim的`-m`参数去压缩图片而不是图片编辑(在我这是GIMP)内置的压缩，很显然的是jpegoptim的压缩效果会因为调用了mozjpeg而小一点或很多(具体的:`--strip-none -f -w 20 --all-progressive -m 95`，`-w`部分为每次同时进行的任务数，可以指定别的，我喜欢是20)~~
-
-3. 不清楚有没有效果，我使用的[upscayl-bin](https://github.com/upscayl/upscayl-ncnn)主体是自己替换掉更新的libwebp和ncnn还有`stb_image。h`等依赖的，因为上一次更新依赖是2年前，在这之后的ncnn版本~~都可以直接~~不可以直接灌进去编译~~但是现在不行了~~，所以为何不嘛
-
-4. 如果自己编译的组件，建议使用`-march=native`之类的优化flag给编译器，对于我的Clang 19来说是:`-Ofast -pipe -march=native -Wno-unused-command-line-argument -mllvm -polly -mllvm -polly-vectorizer=stripmine -flto=thin -mllvm -polly-parallel -mllvm -polly-omp-backend=LLVM -fuse-ld=/usr/bin/ld。lld-19 -mllvm -polly-run-inliner -mllvm -polly-run-dce -fno-semantic-interposition -fvisibility=hidden -mllvm -polly-invariant-load-hoisting -fopenmp=libomp`，什么是更多的，可以给NCNN传递额外的编译选项来稍微给小亮整个活:`-DNCNN_ENABLE_LTO=ON -DNCNN_SIMPLEVK=OFF`
-
-6. 编译flag都是自己随便瞎写的憋骂了，WinDynamicDesktop分支的Python脚本很烂是真的
-
-7. ~~[upscayl-bin](https://github.com/upscayl/upscayl-ncnn)放大出来的图会出现有透明边的情况(具体为竖屏图片的下边，横屏图片的右边，有4~6像素的偏移，不能稳定触发但是概率很高)，后期自行裁切。~~貌似是原本下载下来的图就有这种问题
-
-8. 添加了实验性的[sync_metadata.sh](./scripts/sync_metadata.sh)，用于拷贝原图片的元数据，如果真的有摄影师看到这的话麻烦在IPTC里边写自己的大名。如果被压缩到1080p的情况下无解。
+8. [sync_metadata.sh](./scripts/sync_metadata.sh)用于拷贝原图片的元数据，如果真的有摄影师看到这的话麻烦在IPTC里边写自己的大名
 
 9. 对GIMP默认行为做了点小变动，包括:
 
@@ -449,63 +119,5 @@ scalar run all
    >2. 自行编译了一份[mozjpeg](https://github.com/mozilla/mozjpeg)放到了`/usr/local/lib`内供GIMP加载
    >3. <img src="./doc/gimp-cfg.jpg" width = "300" alt="GIMP config screenshot" align=center />
    >4. 缩放图像时选用了`LoHalo(低光晕)`模式，据说能保留更多细节
-
-10. 最近开始选用[JPEGDestroyer](https://openmodeldb.info/models/1x-JPEGDestroyer)模型来减少1080p下jpeg压缩的副作用对放大模型的影响，目前貌似效果良好。
-
-    `4xNomos8kSC`模型本身具有一定的抗jpeg压缩能力，但是不多，故外挂一次jpeg降噪模型。
-
-    <!--真的是jpeg降噪而不是其他什么说法吗-->
-
-11. 一些(按纵向算的)3k的图片我依旧使用了AI放大并降回(按纵向算的)4k，可能涂抹感较为强烈。抱歉。
-
-12. 实测在一些毛发不明显的图片AI仍旧倾向于抹就完了(eg。[1868.jpg](./横/1868.jpg)和[1880.jpg](./横/1880.jpg))
-
-
-
-## 写在最后
-
-这个项目纯粹是我像找个地方存壁纸用的，各位都应该发现了我把摄影师的水印都去掉了。
-
-虽然去水印这事显得我跟海盗一样，但是各位也应该可以猜的到一个水印唐突放桌面上也确实很奇怪。
-
-也很抱歉我没有问过任何一个人，也没有任何人会同意我做这件事，但最起码我自己开心了，有了一个自己时不时维护的东西随时随地都可以取到自己心爱的东西来看。 很明显的是这个小小的仓库被大部分人发现的时候我可能会遭遇很多比较严重的版权问题，但我除了维护这个仓库之外，我也没什么自己真正想做的了。 只能希望各位到时候手下留情，让我自己对着这些"玩偶服"傻笑罢。
-
-不知道长大后回来看自己小时候坚持做的这个无人问津的仓库会是什么心情呢。 这么个为爱维护但是没人理解的小玩意。
-
-也希望看到这里的各位福瑞控们身体健康，万事如意。 就让我自己一个人在这傻笑罢。
-
-
-
-## 感谢。。。
-
-太美丽啦的系统:[⭐Debian GNU/Linux⭐](https://www.debian.org/)， 
-
-难学但是貌似挺好用的:[Git SCM](https://git-scm.com/)
-
-虽然可以买但是我没钱买的:[Typora](https://typora.io)
-
-比[GNOME](https://wiki.installgentoo.com/wiki/File_Picker_meme)好用且支持非整数缩放的[KDE等离子体桌面](https://kde.org/zh-cn/plasma-desktop/)
-
-给我用来简单编辑图片的[GIMP](https://www.gimp.org/)
-
-简单易用的本地AI图像放大[Upscayl](https://upscayl.org/)
-
-训练出效果超级好的AI放大模型的[Phhofm大佬](https://github.com/Phhofm/models/)
-
-写出Upscayl所使用的AI放大算法软件基底的[xinntao大佬(不知道中文捏)](https://github.com/xinntao/Real-ESRGAN)
-
-用来优化jpeg的[jpegoptim](https://github.com/tjko/jpegoptim)工具
-
-许久未更新的[mozjpeg](https://github.com/mozilla/mozjpeg)
-
-我压根不知道高级功能但是已经离不开的~~臭名昭著的电脑勒索病毒~~[Vim](https://github.com/vim/vim)
-
-在[BiliBili](https://www.bilibili.com)生活的各位兽兽还有摄影师们，抱歉随意拿走你们的幸苦成果了:(
-
-<!--又不是最终结算写这么多干啥-->
-
-神秘小标签(GutHib网页版默认不渲染)
-
-<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width=530 height=86 src="//music.163.com/outchain/player?type=2&id=2657613721&auto=1&height=66"></iframe>
 
 ![Debian button](./doc/Debian-button.gif)
