@@ -1,267 +1,251 @@
 #!/usr/bin/env python3
 """
-同步文件夹中图片对的元数据。
+`sync_metadata.sh` 的 Python 重写版本。
 
-此脚本会查找具有相同基础名称但可能不同扩展名的图片对，
-例如 'image.jpg' 和 'image_cleanup.jpg'，然后将原始文件的
-所有元数据（包括ICC配置文件）同步到其对应的清理/修改后的文件。
+保持原有逻辑:遍历当前(或指定)目录下的媒体文件,将原图的元数据
+(EXIF/IPTC/XMP/ICC 等)与时间戳同步到同名的处理后文件上。
+
+与原脚本的差异(修复项):
+ - 不再依赖 GNU parallel,改用 ThreadPoolExecutor 并行;
+ - 匹配使用的正则对文件名基底做了转义(原来基底中的正则元字符会被解释);
+ - 同一输出被多个输入匹配时去重,只处理一次;
+ - 任务以元组传递,文件名含 ':' 不再破坏解析。
+
+依赖: exiftool(仅此一个外部工具)。
 """
 
-import argparse
+from __future__ import annotations
+
 import os
-import subprocess
-import time
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from pathlib import Path
 import re
-from rich.console import Console
-from rich.live import Live
-from rich.panel import Panel
-from rich.progress import Progress, SpinnerColumn, BarColumn, TextColumn
-import threading
+import shutil
+import stat
+import subprocess
+import sys
+from concurrent.futures import ThreadPoolExecutor
+from dataclasses import dataclass
+from typing import List, Optional, Sequence, Tuple
 
-# --- 可配置项 ---
-# 图片文件扩展名列表
-IMAGE_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.tiff', '.tif', '.bmp', '.webp'}
-# 默认线程数为CPU核心数
-DEFAULT_NUM_THREADS = os.cpu_count()
-# --- 可配置项结束 ---
+VERSION = "2.4"
+PROG = os.path.basename(sys.argv[0])
 
-console = Console()
+MEDIA_EXTS = {".jpg", ".jpeg", ".png", ".tiff", ".webp", ".heic"}
 
-def find_image_pairs(directory_path):
-    """
-    在指定目录中查找图片对。
-    
-    Args:
-        directory_path (str): 要扫描的目录路径。
-        
-    Returns:
-        list: 包含 (original_file, modified_file) 元组的列表。
-    """
-    files = os.listdir(directory_path)
-    file_paths = [Path(f) for f in files if Path(f).suffix.lower() in IMAGE_EXTENSIONS]
-    
-    # 分离原始文件和修改后的文件
-    original_files = set()
-    modified_files = set()
-    
-    for p in file_paths:
-        stem = p.stem
-        # 检查是否为修改后的文件 (以 _cleanup 结尾)
-        if stem.endswith('_cleanup'):
-            base_name = stem[:-len('_cleanup')]
-            modified_files.add(p)
+# input -> output 任务
+Task = Tuple[str, str]
+
+
+def show_help() -> str:
+    return f"""元数据同步工具 v{VERSION}
+在当前目录下同步文件元数据
+
+用法: {PROG} [选项]
+
+选项:
+  -h, --help        显示帮助信息
+  -j <NUM>          指定并行任务数 (默认: CPU核心数)
+  -v, --verbose     显示详细输出
+
+示例:
+  {PROG} -j 8          # 使用8个线程处理当前目录
+  {PROG} -v            # 显示详细处理信息
+"""
+
+
+@dataclass
+class Params:
+    work_dir: str
+    jobs: int
+    verbose: bool
+
+
+def parse_args(argv: Sequence[str]) -> tuple[Params, int]:
+    """解析命令行参数,返回 (参数, 退出码)。退出码为 None 表示继续执行。"""
+    work_dir = os.getcwd()
+    jobs = os.cpu_count() or 1
+    verbose = False
+
+    i = 0
+    while i < len(argv):
+        arg = argv[i]
+        if arg in ("-h", "--help"):
+            print(show_help(), end="")
+            return Params(work_dir, jobs, verbose), 0
+        elif arg == "-j":
+            if i + 1 >= len(argv):
+                print("未知选项: -j")
+                return Params(work_dir, jobs, verbose), 1
+            i += 1
+            try:
+                jobs = max(1, int(argv[i]))
+            except ValueError:
+                print(f"无效的任务数: {argv[i]}")
+                return Params(work_dir, jobs, verbose), 1
+        elif arg in ("-v", "--verbose"):
+            verbose = True
+        elif arg == "--version":
+            print(f"版本: {VERSION}")
+            return Params(work_dir, jobs, verbose), 0
+        elif arg == "-d":
+            if i + 1 >= len(argv):
+                print("未知选项: -d")
+                return Params(work_dir, jobs, verbose), 1
+            i += 1
+            work_dir = argv[i]
         else:
-            # 尝试匹配模式，如 original -> original-test
-            # 这里假设除了_cleanup外的其他变化形式也需要检查是否有原始对应文件
-            # 更严格的逻辑是只看_cleanup，所以这里只处理_cleanup的情况
-            # 其他如 114.jpg 和 114-test.jpg 需要明确规则，当前实现按描述处理
-            # 根据描述，114.jpg -> 114-test.jpg，这意味着如果文件名不是以_cleanup结尾，
-            # 它本身可能是原始文件。
-            original_files.add(p)
+            print(f"未知选项: {arg}")
+            return Params(work_dir, jobs, verbose), 1
+        i += 1
 
-    pairs = []
-    for mod_file in modified_files:
-        base_stem = mod_file.stem[:-len('_cleanup')] # 移除 '_cleanup'
-        # 寻找任何具有相同基础名称的原始文件
-        matching_originals = [f for f in original_files if f.stem == base_stem]
-        if matching_originals:
-            # 如果有多个匹配，选择第一个（可以根据需要调整策略）
-            original_file = matching_originals[0]
-            pairs.append((original_file, mod_file))
-    
-    # 处理非_cleanup的匹配，例如 114.jpg -> 114-test.jpg
-    # 这意味着 114-test.jpg 是修改版，114.jpg 是原始版
-    # 我们需要反向查找，看看哪个文件可能是另一个的修改版
-    # 创建一个不含_cleanup后缀的字典来快速查找
-    cleanup_to_orig_map = {}
-    for mod_file in modified_files:
-        base_stem = mod_file.stem[:-len('_cleanup')]
-        cleanup_to_orig_map[base_stem] = mod_file
-    
-    # 遍历原始文件，看是否能找到对应的修改版
-    temp_pairs = []
-    remaining_originals = set(original_files)
-    for orig_file in original_files:
-        base_stem = orig_file.stem
-        if base_stem in cleanup_to_orig_map:
-            # 这种情况是 cleanup 文件找到了原始文件，已经在上面处理过了
+    return Params(work_dir, jobs, verbose), None
+
+
+def check_deps() -> None:
+    """检查外部依赖。原脚本要求 exiftool 与 parallel,重写后仅需 exiftool。"""
+    missing: List[str] = []
+    if shutil.which("exiftool") is None:
+        missing.append("exiftool")
+
+    if missing:
+        print("缺少依赖: " + " ".join(missing))
+        sys.exit(1)
+
+
+def find_media_files(work_dir: str) -> List[str]:
+    """递归收集媒体文件,结果按(排序后的)完整路径返回。
+
+    对应原脚本 `find "$WORK_DIR" -type f ... -print0 | sort -z`:
+    不跟随符号链接,`-type f` 要求普通文件。
+    """
+    files: List[str] = []
+    for dirpath, dirnames, filenames in os.walk(work_dir):
+        del dirnames  # 需要递归,默认行为即可
+        for name in filenames:
+            full = os.path.join(dirpath, name)
+            try:
+                mode = os.lstat(full).st_mode
+            except OSError:
+                continue
+            if not stat.S_ISREG(mode):
+                continue
+            if os.path.splitext(name)[1].lower() in MEDIA_EXTS:
+                files.append(full)
+    files.sort()
+    return files
+
+
+def base_without_ext(name: str) -> str:
+    """等价于 bash 的 `${name%.*}`:去掉最后一个点及其后面的部分。
+
+    与 os.path.splitext 不同:`.jpg` 会得到空串而非 `.jpg`。
+    """
+    idx = name.rfind(".")
+    return name[:idx] if idx >= 0 else name
+
+
+def match_output_files(input_file: str, files: Sequence[str]) -> List[str]:
+    """返回所有能与输入文件构成 "原图 -> 处理后文件" 关系的输出文件。
+
+    匹配规则与原脚本一致(修复了正则转义):
+      basename(out) 以 "<base>" 开头,其后为可选的 "-..." 或 "_..." 段,
+      再跟一个点及扩展名;并跳过输入文件自身。
+    """
+    input_name = os.path.basename(input_file)
+    base = base_without_ext(input_name)
+    pattern = "^" + re.escape(base) + r"([-_].+)?\..+$"
+    regex = re.compile(pattern, re.DOTALL)
+
+    matches: List[str] = []
+    for output_file in files:
+        if output_file == input_file:
             continue
-        # 检查是否有其他文件以 base_stem 开头（例如，114.jpg 和 114-test.jpg）
-        # 这种情况是原始文件找到了修改版
-        for other_file in original_files:
-            if other_file != orig_file:
-                # 检查 other_file 是否以 orig_file.stem 开头，并且后面跟的是 '-', '_' 或类似字符
-                # 例如: orig.stem='114', other.stem='114-test'
-                if other_file.stem.startswith(orig_file.stem + '-') or other_file.stem.startswith(orig_file.stem + '_'):
-                    # 这意味着 orig_file 是原始文件，other_file 是修改后的文件
-                    # 检查这个other_file是否已经被配对过
-                    if other_file not in [p[1] for p in pairs]:
-                        temp_pairs.append((orig_file, other_file))
-                        remaining_originals.discard(orig_file)
-                        remaining_originals.discard(other_file)
-                        break # 假设一个原始文件只有一个修改版，找到就跳出
-
-    pairs.extend(temp_pairs)
-
-    return pairs
+        if regex.match(os.path.basename(output_file)):
+            matches.append(output_file)
+    return matches
 
 
-def sync_metadata_pair(args):
+def generate_tasks(files: Sequence[str]) -> List[Task]:
+    """生成任务列表并去重。
+
+    原脚本会对每个输入重复扫描,且同一输出可被多个输入匹配,导致任务重复;
+    这里按输出路径去重,保留首次出现的输入(结果确定)。
     """
-    同步一对图片的元数据。
-    
-    Args:
-        args (tuple): 包含 (original_path, modified_path, directory_path) 的元组。
-        
-    Returns:
-        tuple: (success: bool, original_path: str, modified_path: str, duration: float)
+    tasks: List[Task] = []
+    seen: set[str] = set()
+    for input_file in files:
+        for output_file in match_output_files(input_file, files):
+            if output_file in seen:
+                continue
+            seen.add(output_file)
+            tasks.append((input_file, output_file))
+    return tasks
+
+
+def process_task(task: Task, verbose: bool) -> bool:
+    """同步单个任务:存在性检查 -> exiftool 复制元数据 -> 复制时间戳。
+
+    对应原脚本 process_task(exiftool 与 touch -r)。
     """
-    original_file, modified_file, directory_path = args
-    start_time = time.time()
-    
-    try:
-        # 构建完整的文件路径
-        input_path = os.path.join(directory_path, original_file.name)
-        output_path = os.path.join(directory_path, modified_file.name)
+    input_file, output_file = task
 
-        # 执行 exiftool 命令
-        cmd = [
-            "exiftool", "-quiet", "-TagsFromFile", input_path,
-            "-all:all", "-icc_profile", "-ignoreMinorErrors",
-            "-overwrite_original", output_path
-        ]
-        result = subprocess.run(cmd, check=True, capture_output=True, text=True)
+    if not os.path.isfile(input_file) or not os.path.isfile(output_file):
+        return False
+    if verbose:
+        print(f"处理: {input_file} → {output_file}")
 
-        # 执行 touch 命令同步时间戳
-        touch_cmd = ["touch", "-r", input_path, output_path]
-        subprocess.run(touch_cmd, check=True)
+    cmd = [
+        "exiftool",
+        "-quiet",
+        "-TagsFromFile",
+        input_file,
+        "-all:all",
+        "-icc_profile",
+        "-ignoreMinorErrors",
+        "-overwrite_original",
+        output_file,
+    ]
+    subprocess.run(cmd, check=False)
 
-        duration = time.time() - start_time
-        return True, original_file.name, modified_file.name, duration
-    except subprocess.CalledProcessError as e:
-        console.log(f"[red]Error syncing {original_file} -> {modified_file}: {e}")
-        duration = time.time() - start_time
-        return False, original_file.name, modified_file.name, duration
-    except Exception as e:
-        console.log(f"[red]Unexpected error syncing {original_file} -> {modified_file}: {e}")
-        duration = time.time() - start_time
-        return False, original_file.name, modified_file.name, duration
+    st = os.stat(input_file)
+    os.utime(output_file, ns=(st.st_atime_ns, st.st_mtime_ns))
+    return True
 
 
-def main():
-    parser = argparse.ArgumentParser(description="Synchronize metadata between image pairs.")
-    parser.add_argument('-j', '--jobs', type=int, default=DEFAULT_NUM_THREADS,
-                        help=f'Number of parallel jobs (default: {DEFAULT_NUM_THREADS})')
-    args = parser.parse_args()
+def main(argv: Optional[Sequence[str]] = None) -> int:
+    check_deps()
 
-    num_threads = args.jobs
-    directory_path = os.getcwd()
+    if argv is None:
+        argv = sys.argv[1:]
 
-    console.log(f"[green]Scanning directory:[/green] {directory_path}")
-    console.log(f"[green]Using[/green] {num_threads} [green]threads for processing.[/green]")
+    params, exit_code = parse_args(argv)
+    if exit_code is not None:
+        return exit_code
 
-    # Step 1: 查找图片对
-    console.log("[blue]Step 1: Finding image pairs...[/blue]")
-    start_scan_time = time.time()
-    image_pairs = find_image_pairs(directory_path)
-    scan_duration = time.time() - start_scan_time
+    files = find_media_files(params.work_dir)
+    tasks = generate_tasks(files)
+    task_count = len(tasks)
+    jobs = params.jobs
+    verbose = params.verbose
 
-    console.log(f"[green]Found {len(image_pairs)} image pairs to process.[/green] (Scan took {scan_duration:.2f}s)")
+    if verbose:
+        print(f"找到 {task_count} 个任务，使用 {jobs} 个线程处理")
 
-    if not image_pairs:
-        console.log("[yellow]No image pairs found. Exiting.[/yellow]")
-        return
+    if not tasks:
+        return 0
 
-    total_pairs = len(image_pairs)
-    completed_tasks = 0
-    failed_tasks = 0
-    processed_durations = [] # 存储已完成任务的持续时间，用于ETA计算
-    lock = threading.Lock() # 保护共享变量
+    done = 0
+    with ThreadPoolExecutor(max_workers=jobs) as pool:
+        futures = [pool.submit(process_task, task, verbose) for task in tasks]
+        for future in futures:
+            future.result()
+            done += 1
+            sys.stderr.write(f"\r进度: {done}/{task_count}")
+            sys.stderr.flush()
+    if task_count:
+        sys.stderr.write("\n")
 
-    progress = Progress(
-        SpinnerColumn(),
-        TextColumn("[progress.description]{task.description}"),
-        BarColumn(),
-        TextColumn("[progress.percentage]{task.percentage:>3.2f}% ({completed}/{total})"),
-        console=console,
-        transient=False,
-    )
-    overall_task = progress.add_task("Processing...", total=total_pairs)
-
-    def update_progress(success, orig_name, mod_name, duration):
-        nonlocal completed_tasks, failed_tasks
-        with lock:
-            completed_tasks += 1
-            if not success:
-                failed_tasks += 1
-            processed_durations.append(duration)
-            progress.update(overall_task, advance=1, completed=completed_tasks)
-
-    # 状态面板更新函数
-    def update_status_panel():
-        with lock:
-            current_percentage = (completed_tasks / total_pairs) * 100 if total_pairs > 0 else 0
-            current_stage = "同步数据" if completed_tasks > 0 else "查找图片"
-            
-            # 计算ETA
-            avg_duration = sum(processed_durations) / len(processed_durations) if processed_durations else 0
-            remaining_count = total_pairs - completed_tasks
-            eta_seconds = avg_duration * remaining_count
-            
-            elapsed_total = time.time() - start_scan_time # 从开始扫描算起的总时间
-            if eta_seconds > 0:
-                 # 避免ETA显示负数或奇怪的格式
-                eta_str = f"{eta_seconds//3600:02.0f}:{(eta_seconds%3600)//60:02.0f}:{eta_seconds%60:02.0f}"
-            else:
-                eta_str = "00:00:00"
-            
-            elapsed_str = f"{elapsed_total//3600:02.0f}:{(elapsed_total%3600)//60:02.0f}:{elapsed_total%60:02.0f}"
-
-            status_text = (
-                f"当前百分比: {current_percentage:.2f}%\n"
-                f"当前阶段: {current_stage}\n"
-                f"需要处理数量: {total_pairs}\n"
-                f"已处理数量: {completed_tasks}\n"
-                f"失败数量: {failed_tasks}\n"
-                f"预计剩余时间: {eta_str}\n"
-                f"已运行时间: {elapsed_str}"
-            )
-        return Panel(status_text, title="同步状态", border_style="blue")
-
-
-    console.clear()
-    # 使用 Rich.Live 来持续更新底部面板
-    with Live(update_status_panel(), refresh_per_second=4, console=console) as live:
-        # Step 2: 并行同步元数据
-        console.log("[blue]Step 2: Synchronizing metadata...[/blue]")
-        start_sync_time = time.time()
-        
-        with ThreadPoolExecutor(max_workers=num_threads) as executor:
-            # 准备任务参数
-            tasks = [(pair[0], pair[1], directory_path) for pair in image_pairs]
-            future_to_pair = {executor.submit(sync_metadata_pair, task): task for task in tasks}
-
-            for future in as_completed(future_to_pair):
-                success, orig_name, mod_name, duration = future.result()
-                update_progress(success, orig_name, mod_name, duration)
-                # 更新Live显示的面板
-                live.update(update_status_panel())
-
-    sync_duration = time.time() - start_sync_time
-    total_duration = time.time() - start_scan_time
-
-    # Step 3: 总结
-    console.log("\n" + "="*40)
-    console.log("[bold green]Summary:[/bold green]")
-    console.log(f"- Total runtime: {total_duration:.2f} seconds")
-    console.log(f"- Total items processed: {total_pairs}")
-    console.log(f"- Successfully synced: {completed_tasks - failed_tasks}")
-    console.log(f"- Failed: {failed_tasks}")
-    console.log(f"- Average time per item: {sync_duration / completed_tasks:.2f} seconds" if completed_tasks > 0 else "- Average time per item: N/A (no items processed)")
-    console.log("="*40)
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
