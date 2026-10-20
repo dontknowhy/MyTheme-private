@@ -1,0 +1,32 @@
+{
+  "folders": [
+    "横",
+    "竖"
+  ],
+  "exceptions": {
+    "横": [
+      "猫猫.jpg"
+    ],
+    "竖": []
+  },
+  "require_contiguous": true,
+  "max_file_size_bytes": 7340032,
+  "worktree_overrides": {
+    "selected": {
+      "folders": [
+        "wallpapers"
+      ],
+      "exceptions": {
+        "wallpapers": []
+      }
+    }
+  },
+  "repair_script": "scripts/fix_thumbnail.py",
+  "repair": {
+    "enabled": true,
+    "python": null,
+    "args": [
+      "--verify"
+    ]
+  }
+}
